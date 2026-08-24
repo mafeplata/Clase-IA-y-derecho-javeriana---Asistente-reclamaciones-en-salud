@@ -273,6 +273,72 @@ Todo es **gratuito y no exige tarjeta de crédito**. Tu proyecto final debería 
 
 Pídele a tu agente de IA que te explique esta arquitectura con tu proyecto concreto antes de escribir una línea de código.
 
+ReclamaSalud se desarrollará principalmente en Python. Se escogió una arquitectura sencilla para facilitar su construcción, evaluación y despliegue durante el curso.
+
+La arquitectura prevista es la siguiente:
+
+```text
+[Usuario]
+    ↓
+[Interfaz web en Streamlit]
+    ↓
+[Entrevista y validación en Python]
+    ↓
+[Búsqueda de fuentes con LangChain y FAISS]
+    ↓
+[Fragmentos jurídicos relevantes]
+    ↓
+[Modelo de lenguaje mediante OpenRouter]
+    ↓
+[Borrador de reclamación con citas]
+```
+
+### Herramientas seleccionadas
+
+| Componente | Herramienta | Función dentro de ReclamaSalud |
+| --- | --- | --- |
+| Lenguaje | Python | Construir la lógica de la aplicación. |
+| Interfaz web | Streamlit | Mostrar preguntas, advertencias y resultados. |
+| Orquestación | LangChain | Coordinar la búsqueda jurídica y el uso del modelo. |
+| Modelo de lenguaje | OpenRouter | Acceder al LLM que redactará el borrador. |
+| Sistema RAG | LangChain y FAISS | Buscar fragmentos relevantes en el corpus jurídico. |
+| Gestión del código | GitHub | Guardar el proyecto y su historial. |
+| Despliegue | Streamlit Community Cloud | Publicar la herramienta mediante una URL. |
+
+### Funcionamiento previsto
+
+1. El usuario describe su problema con la EPS.
+2. La herramienta realiza preguntas para completar la información.
+3. Python valida que existan los datos mínimos.
+4. El sistema busca fuentes relacionadas dentro del corpus jurídico.
+5. El LLM recibe los hechos y los fragmentos jurídicos recuperados.
+6. El LLM genera un borrador de reclamación con citas.
+7. El usuario puede revisar, copiar o descargar el resultado.
+8. La herramienta no almacena la conversación ni radica automáticamente la reclamación.
+
+### Seguridad y privacidad
+
+- La clave de OpenRouter se guardará como una variable de entorno.
+- La clave nunca se incluirá en el código ni en GitHub.
+- El prototipo no almacenará conversaciones.
+- Las pruebas utilizarán nombres y situaciones ficticias.
+- No se cargarán historias clínicas ni documentos médicos reales.
+- La interfaz advertirá que no deben ingresarse datos sensibles.
+- El modelo responderá únicamente con base en el corpus seleccionado.
+
+### Estado de implementación
+
+- [x] Arquitectura general definida.
+- [x] Herramientas principales seleccionadas.
+- [ ] Entorno de Python creado.
+- [ ] Interfaz construida.
+- [ ] Prompt de sistema implementado.
+- [ ] Corpus procesado.
+- [ ] Sistema RAG conectado.
+- [ ] Modelo de lenguaje conectado.
+- [ ] Aplicación desplegada.
+
+Aunque la arquitectura ya fue seleccionada, el proyecto continúa en el hito **M0 — Descripción y plan**.
 ---
 
 ## 🚀 Parte 4 — Ruta de despliegue
