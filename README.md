@@ -81,8 +81,61 @@ Durante la etapa académica, las pruebas se realizarán con situaciones ficticia
 
 ### 1.4 Marco jurídico y fuentes
 ¿Qué normas alimentan tu herramienta? Lista tu corpus normativo (leyes, decretos, sentencias — debe ser **pequeño y público**):
-- [ ] Norma/sentencia 1: [nombre + enlace]
-- [ ] Norma/sentencia 2: [nombre + enlace]
+La herramienta se fundamentará en normas colombianas relacionadas con el derecho fundamental a la salud, el acceso a servicios sanitarios, los derechos de los afiliados y la presentación de reclamaciones.
+
+Para reducir errores, la primera versión utilizará un corpus pequeño compuesto por fuentes públicas y oficiales. El asistente solo podrá formular afirmaciones jurídicas respaldadas por estas fuentes y deberá citar la norma, artículo o sentencia correspondiente.
+
+Si el corpus no contiene información suficiente para responder un caso, la herramienta deberá reconocer esa limitación en lugar de inventar una respuesta.
+
+#### Corpus principal
+
+- [ ] **Constitución Política de Colombia — artículos 23, 48 y 49.**  
+  El artículo 23 reconoce el derecho de petición; el artículo 48 regula la seguridad social; y el artículo 49 garantiza el acceso a los servicios de promoción, protección y recuperación de la salud.  
+  [Consultar en SUIN-Juriscol](https://www.suin-juriscol.gov.co/viewDocument.asp?id=1687988)
+
+- [ ] **Ley Estatutaria 1751 de 2015 — derecho fundamental a la salud.**  
+  Será la fuente principal para explicar principios como oportunidad, continuidad, accesibilidad, calidad e integralidad. También contiene derechos y deberes relacionados con la prestación de servicios de salud.  
+  [Consultar en el Ministerio de Salud](https://minsalud.gov.co/Normatividad_Nuevo/Ley%201751%20de%202015.pdf)
+
+- [ ] **Ley 1755 de 2015 — derecho de petición.**  
+  Define para qué sirve una petición, su contenido mínimo y los términos generales de respuesta. Será utilizada para construir la estructura formal de las reclamaciones.  
+  [Consultar en Función Pública](https://www.funcionpublica.gov.co/eva/gestornormativo/norma_pdf.php?i=65334)
+
+- [ ] **Resolución 229 de 2020 — Carta de derechos y deberes del afiliado y del paciente.**  
+  Contiene los derechos de las personas afiliadas y las obligaciones informativas de las EPS.  
+  [Consultar en el Ministerio de Salud](https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/DE/DIJ/resolucion-229-de-2020.pdf)
+
+- [ ] **Circular Externa 2023151000000010-5 de 2023 — Superintendencia Nacional de Salud.**  
+  Contiene instrucciones sobre la recepción y gestión de peticiones, quejas y reclamos en salud. También clasifica los reclamos según su riesgo y establece términos diferenciados para su gestión.  
+  [Consultar en la Superintendencia Nacional de Salud](https://docs.supersalud.gov.co/PortalWeb/Juridica/CircularesExterna/Circular%20Externa%20No.%202023151000000010-5%20de%202023.pdf)
+
+- [ ] **Sentencia T-760 de 2008 — Corte Constitucional.**  
+  Reúne reglas importantes sobre el acceso efectivo a los servicios de salud, las barreras administrativas, la continuidad y la obligación de prestar los servicios de manera oportuna, eficiente y con calidad.  
+  [Consultar en la Corte Constitucional](https://www.corteconstitucional.gov.co/relatoria/2008/t-760-08.htm)
+
+#### Fuentes complementarias
+
+Estas fuentes podrán incorporarse después de probar correctamente el corpus principal:
+
+- [ ] **Decreto 780 de 2016 — Decreto Único Reglamentario del Sector Salud.**  
+  Debido a su extensión y modificaciones, solamente se seleccionarán los artículos directamente relacionados con el alcance del proyecto.  
+  [Consultar en el Ministerio de Salud](https://minsalud.gov.co/Normativa/paginas/decreto-unico-minsalud-780-de-2016.aspx)
+
+- [ ] **Sentencia SU-508 de 2020 — Corte Constitucional.**  
+  Puede utilizarse para estudiar el acceso a servicios y tecnologías en salud y los mecanismos de protección disponibles.  
+  [Consultar en la Corte Constitucional](https://www.corteconstitucional.gov.co/relatoria/2020/su508-20.htm)
+
+- [ ] **Canales oficiales de PQRD de la Superintendencia Nacional de Salud.**  
+  Se utilizarán para informar al usuario dónde puede presentar o consultar una reclamación.  
+  [Consultar en la Superintendencia Nacional de Salud](https://www.supersalud.gov.co/es-co/Paginas/Protecci%C3%B3n%20al%20Usuario/atencion-al-ciudadano.html)
+
+#### Protección de datos
+
+- [ ] **Ley 1581 de 2012 — protección de datos personales.**  
+  Los datos relacionados con la salud son datos sensibles. Por esta razón, el prototipo académico no almacenará historias clínicas, diagnósticos, documentos de identidad ni anexos reales. Las pruebas se realizarán con información ficticia.  
+  [Consultar en Función Pública](https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?country=76&i=49981&offset=0)
+
+---
 
 ### 1.5 Nombre y lema
 Un nombre corto para tu herramienta y una frase que explique qué hace (la usarás en la demo del día de presentaciones).
