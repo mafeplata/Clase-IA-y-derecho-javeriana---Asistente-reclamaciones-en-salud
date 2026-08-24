@@ -250,11 +250,11 @@ Marca cada hito cuando lo termines. Los hitos siguen las sesiones del curso.
 
 | Semana | Qué hice | Evidencia | Dudas para la clase |
 | --- | --- | --- | --- |
-| 1 | Definí el problema jurídico, los usuarios, el alcance, las fuentes iniciales, el nombre y el lema de ReclamaSalud. También elaboré el plan de desarrollo. | Partes 1 y 2 del README. | ¿El corpus inicial es adecuado y suficientemente delimitado para el proyecto? |
-| 2 | Pendiente: redactar y probar el prompt de sistema. | Pendiente. | Pendiente. |
-| 3 | Pendiente: crear casos de prueba y organizar el corpus. | Pendiente. | Pendiente. |
-| 4 | Pendiente: conectar el sistema RAG y construir la interfaz. | Pendiente. | Pendiente. |
-| 5 | Pendiente: desplegar, probar con un usuario y preparar la presentación. | Pendiente. | Pendiente. |
+| 1-3 | Definí el problema jurídico, los usuarios, el alcance, las fuentes iniciales, el nombre y el lema de ReclamaSalud. También elaboré el plan de desarrollo. | Partes 1 y 2 del README. | ¿El corpus inicial es adecuado y suficientemente delimitado para el proyecto? |
+| 4-7 | Pendiente: redactar y probar el prompt de sistema. | Pendiente. | Pendiente. |
+| 7-10| Pendiente: crear casos de prueba y organizar el corpus. | Pendiente. | Pendiente. |
+| 11-13 | Pendiente: conectar el sistema RAG y construir la interfaz. | Pendiente. | Pendiente. |
+| 14-16| Pendiente: desplegar, probar con un usuario y preparar la presentación. | Pendiente. | Pendiente. |
 
 ---
 
