@@ -3,8 +3,8 @@
 **Pontificia Universidad Javeriana · 2026-II · Docente: Pedro Ardila**
 
 > **Estudiante:** Maria Fernanda Plata Silva
-> **Nombre del proyecto:** [escribe aquí el nombre de tu herramienta]
-> **Fecha de inicio:** [AAAA-MM-DD]
+> **Nombre del proyecto:** Asistente de reclamaciones de salud
+> **Fecha de inicio:** 2026-08-18
 
 ---
 
@@ -22,6 +22,16 @@ Bienvenido/a a tu repositorio de proyecto. **Este archivo es tu tablero de mando
 
 ### 1.1 El problema jurídico
 ¿Qué problema **real del derecho colombiano** resuelve tu herramienta? ¿Quién lo sufre hoy y cómo lo resuelve sin tu herramienta?
+
+En Colombia, muchos usuarios del sistema de salud encuentran dificultades para acceder a los servicios que necesitan, como medicamentos, citas médicas, exámenes, procedimientos, tratamientos y atención especializada. Estas dificultades pueden consistir en negativas, demoras injustificadas, interrupciones del servicio, barreras administrativas o ausencia de una respuesta clara por parte de la EPS.
+
+Muchas personas no saben cómo presentar una reclamación, qué información deben incluir, qué deben solicitar ni cuáles normas pueden respaldar su petición. Actualmente, los usuarios deben buscar modelos generales en internet, acudir presencialmente a diferentes entidades o solicitar ayuda profesional, lo que puede generar confusión y retrasar la solución del problema.
+
+El proyecto busca facilitar la elaboración de una reclamación inicial mediante una entrevista guiada. La herramienta organizará los hechos, identificará información faltante y generará un borrador dirigido a la EPS, sustentado en un corpus jurídico previamente seleccionado. También explicará posibles pasos posteriores cuando la EPS no responda o la situación requiera la intervención de otra entidad.
+
+La herramienta no determinará de manera definitiva que exista una vulneración de derechos, no garantizará un resultado favorable y no sustituirá la asesoría de un abogado ni la atención de un profesional de la salud.
+
+---
 
 ### 1.2 Usuarios
 ¿Quién va a usarla? Describe a tu usuario ideal en una frase (ej. *"un arrendatario bogotano que le subieron el canon de arrendamiento más del límite legal"*). Recuerda que al final necesitas **al menos un usuario real** que la pruebe.
