@@ -139,7 +139,15 @@ Estas fuentes podrán incorporarse después de probar correctamente el corpus pr
 
 ### 1.5 Nombre y lema
 Un nombre corto para tu herramienta y una frase que explique qué hace (la usarás en la demo del día de presentaciones).
+**Nombre:** ReclamaSalud
 
+**Lema:** Organiza tu caso y crea una reclamación clara para tu EPS.
+
+**Descripción:**
+
+ReclamaSalud es un asistente académico que ayuda a las personas afiliadas a una EPS en Colombia a organizar un problema de acceso a servicios de salud y generar un borrador de reclamación basado en fuentes jurídicas verificables.
+
+La herramienta no sustituye la asesoría legal ni la atención de un profesional de la salud.
 ---
 
 ## 🗺️ Parte 2 — Plan de desarrollo
