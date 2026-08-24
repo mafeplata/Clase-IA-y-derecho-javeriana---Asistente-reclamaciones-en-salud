@@ -36,6 +36,20 @@ La herramienta no determinará de manera definitiva que exista una vulneración 
 ### 1.2 Usuarios
 ¿Quién va a usarla? Describe a tu usuario ideal en una frase (ej. *"un arrendatario bogotano que le subieron el canon de arrendamiento más del límite legal"*). Recuerda que al final necesitas **al menos un usuario real** que la pruebe.
 
+La herramienta está dirigida a personas afiliadas a una EPS en Colombia que enfrentan dificultades para acceder a medicamentos, citas, exámenes, procedimientos, tratamientos u otros servicios de salud.
+
+Su usuario ideal es una persona que recibió una negativa, experimenta una demora o encuentra una barrera administrativa, pero no sabe cómo presentar una reclamación clara ante su EPS. No necesita tener conocimientos jurídicos ni experiencia redactando documentos legales.
+
+La herramienta utilizará preguntas sencillas para ayudar al usuario a organizar los hechos y expresar concretamente sus solicitudes. También podrá ser utilizada por familiares o cuidadores que ayuden al paciente, siempre que estén autorizados para actuar en su nombre cuando sea necesario.
+
+Durante la etapa académica, las pruebas se realizarán con situaciones ficticias y datos inventados para evitar el tratamiento de información personal o médica real.
+
+**Usuario ideal en una frase:**
+
+> Una persona afiliada a una EPS en Colombia que enfrenta una barrera de acceso a un servicio de salud y necesita ayuda para redactar una reclamación inicial.
+
+---
+
 ### 1.3 Qué hace y qué NO hace (alcance)
 | ✅ Sí hace | ❌ No hace |
 | --- | --- |
