@@ -162,24 +162,6 @@ Marca cada hito cuando lo termines. Los hitos siguen las sesiones del curso.
 - [ ] **M5 — Análisis crítico y demo** *(Sesión 5)*: Parte 7 completada + presentación de 5 minutos.
 
 ### Bitácora de avance semanal
-- [x] **M0 — Descripción y plan** *(Sesión 1)*  
-  Se completaron las Partes 1 y 2 del README. Se definieron el problema jurídico, los usuarios, el alcance, las fuentes jurídicas iniciales, el nombre del proyecto y el plan de desarrollo.
-
-- [ ] **M1 — Asistente con instrucciones v1** *(Sesiones 1 y 2)*  
-  Redactar y probar el prompt de sistema de ReclamaSalud. El asistente deberá organizar los hechos, solicitar información faltante, utilizar únicamente las fuentes suministradas y reconocer cuando no pueda responder.
-
-- [ ] **M2 — Casos de prueba documentados** *(Sesión 2)*  
-  Diseñar al menos cinco casos ficticios para evaluar el asistente. Los casos deberán incluir situaciones correctas, información incompleta, consultas fuera del alcance y solicitudes que puedan provocar respuestas inventadas.
-
-- [ ] **M3 — Corpus conectado mediante RAG** *(Sesión 3)*  
-  Descargar, organizar y conectar las fuentes jurídicas seleccionadas. El asistente deberá recuperar los fragmentos pertinentes y citar la norma, el artículo o la sentencia utilizada en cada respuesta.
-
-- [ ] **M4 — Interfaz web desplegada** *(Sesión 4)*  
-  Crear una interfaz sencilla donde el usuario pueda responder preguntas, revisar la información de su caso y generar un borrador de reclamación. La herramienta deberá tener una advertencia visible y una URL pública.
-
-- [ ] **M5 — Análisis crítico y presentación** *(Sesión 5)*  
-  Probar la herramienta con al menos un usuario, documentar sus resultados, identificar limitaciones y preparar una presentación de cinco minutos.
-
 ---
 
 ### Actividades previstas por hito
