@@ -53,8 +53,29 @@ Durante la etapa académica, las pruebas se realizarán con situaciones ficticia
 ### 1.3 Qué hace y qué NO hace (alcance)
 | ✅ Sí hace | ❌ No hace |
 | --- | --- |
-| [funcionalidad 1] | [fuera de alcance 1] |
-| [funcionalidad 2] | [fuera de alcance 2] |
+| Realiza preguntas para conocer el problema del usuario con su EPS. | No proporciona diagnósticos médicos. |
+| Identifica si el caso se relaciona con una demora, negativa, interrupción o barrera administrativa. | No recomienda medicamentos, tratamientos ni procedimientos médicos. |
+| Organiza cronológicamente los hechos relatados por el usuario. | No inventa hechos que el usuario no haya proporcionado. |
+| Señala qué información importante hace falta. | No determina definitivamente que la EPS vulneró un derecho. |
+| Genera un borrador de reclamación inicial dirigido a la EPS. | No garantiza que la reclamación sea aceptada. |
+| Propone solicitudes concretas para incluir en la reclamación. | No presenta ni radica automáticamente la reclamación. |
+| Explica en lenguaje sencillo las normas encontradas en su corpus. | No actúa en representación del usuario. |
+| Cita las fuentes jurídicas utilizadas en la respuesta. | No inventa normas, artículos, sentencias, autoridades ni plazos. |
+| Sugiere documentos que podrían anexarse a la reclamación. | No verifica la autenticidad o validez de los documentos. |
+| Informa sobre posibles pasos posteriores, como acudir a la Supersalud o buscar orientación profesional. | No elabora automáticamente demandas ni acciones de tutela. |
+| Muestra una alerta cuando el relato indica una posible urgencia. | No sustituye los servicios de urgencias, un médico o un abogado. |
+| Permite copiar o descargar el borrador generado. | No almacena historias clínicas ni datos sensibles en la versión académica. |
+| Reconoce cuando el corpus no contiene información suficiente. | No responde jurídicamente asuntos que estén fuera de su corpus. |
+
+**Advertencia obligatoria:**
+
+> Esta herramienta es un ejercicio académico. No constituye asesoría legal, no ofrece orientación médica y no sustituye la consulta con un abogado, un profesional de la salud o las autoridades competentes. En una emergencia médica, comuníquese con los servicios de emergencia o acuda inmediatamente al centro asistencial más cercano.
+
+**Regla principal del asistente:**
+
+> La herramienta ayuda a organizar los hechos y redactar una reclamación inicial, pero no decide el caso, no realiza diagnósticos y no promete resultados.
+
+---
 
 *Consejo de abogado: un alcance pequeño y perfecto vale más que uno grande y roto.*
 
