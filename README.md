@@ -162,14 +162,111 @@ Marca cada hito cuando lo termines. Los hitos siguen las sesiones del curso.
 - [ ] **M5 — Análisis crítico y demo** *(Sesión 5)*: Parte 7 completada + presentación de 5 minutos.
 
 ### Bitácora de avance semanal
-| Semana | Qué hice | Enlace/captura | Dudas para la clase |
-| --- | --- | --- | --- |
-| 1 | | | |
-| 2 | | | |
-| 3 | | | |
-| 4 | | | |
-| 5 | | | |
+- [x] **M0 — Descripción y plan** *(Sesión 1)*  
+  Se completaron las Partes 1 y 2 del README. Se definieron el problema jurídico, los usuarios, el alcance, las fuentes jurídicas iniciales, el nombre del proyecto y el plan de desarrollo.
 
+- [ ] **M1 — Asistente con instrucciones v1** *(Sesiones 1 y 2)*  
+  Redactar y probar el prompt de sistema de ReclamaSalud. El asistente deberá organizar los hechos, solicitar información faltante, utilizar únicamente las fuentes suministradas y reconocer cuando no pueda responder.
+
+- [ ] **M2 — Casos de prueba documentados** *(Sesión 2)*  
+  Diseñar al menos cinco casos ficticios para evaluar el asistente. Los casos deberán incluir situaciones correctas, información incompleta, consultas fuera del alcance y solicitudes que puedan provocar respuestas inventadas.
+
+- [ ] **M3 — Corpus conectado mediante RAG** *(Sesión 3)*  
+  Descargar, organizar y conectar las fuentes jurídicas seleccionadas. El asistente deberá recuperar los fragmentos pertinentes y citar la norma, el artículo o la sentencia utilizada en cada respuesta.
+
+- [ ] **M4 — Interfaz web desplegada** *(Sesión 4)*  
+  Crear una interfaz sencilla donde el usuario pueda responder preguntas, revisar la información de su caso y generar un borrador de reclamación. La herramienta deberá tener una advertencia visible y una URL pública.
+
+- [ ] **M5 — Análisis crítico y presentación** *(Sesión 5)*  
+  Probar la herramienta con al menos un usuario, documentar sus resultados, identificar limitaciones y preparar una presentación de cinco minutos.
+
+---
+
+### Actividades previstas por hito
+
+#### M0 — Descripción y plan
+
+- [x] Definir el problema jurídico.
+- [x] Identificar a los usuarios.
+- [x] Establecer qué hace y qué no hace la herramienta.
+- [x] Seleccionar las fuentes jurídicas iniciales.
+- [x] Escoger el nombre y el lema.
+- [x] Elaborar el plan de desarrollo.
+
+#### M1 — Instrucciones del asistente
+
+- [ ] Redactar la primera versión del prompt de sistema.
+- [ ] Definir las preguntas que realizará al usuario.
+- [ ] Establecer la estructura de las respuestas.
+- [ ] Incluir reglas contra la invención de normas y hechos.
+- [ ] Incluir la advertencia académica, jurídica y médica.
+- [ ] Probar el prompt en una herramienta de chat.
+
+#### M2 — Casos de prueba
+
+- [ ] Crear casos ficticios de demoras y negativas de servicios.
+- [ ] Crear un caso con información incompleta.
+- [ ] Crear un caso que se encuentre fuera del alcance.
+- [ ] Crear un caso con una posible urgencia médica.
+- [ ] Crear un caso que intente hacer que el modelo invente una norma.
+- [ ] Documentar los resultados en `docs/casos-de-prueba.md`.
+- [ ] Corregir las instrucciones según los errores encontrados.
+
+#### M3 — Corpus y RAG
+
+- [ ] Descargar las fuentes desde sitios oficiales.
+- [ ] Seleccionar los artículos y fragmentos pertinentes.
+- [ ] Guardar los documentos en la carpeta `corpus/`.
+- [ ] Registrar el nombre, autoridad, fecha y enlace de cada fuente.
+- [ ] Dividir los documentos en fragmentos utilizables.
+- [ ] Conectar el corpus mediante RAG.
+- [ ] Verificar que las citas correspondan con las fuentes.
+- [ ] Probar que el asistente se niegue a inventar respuestas.
+
+#### M4 — Interfaz y despliegue
+
+- [ ] Crear el formulario de entrevista.
+- [ ] Mostrar un resumen de los hechos.
+- [ ] Generar el borrador de reclamación.
+- [ ] Permitir copiar o descargar el documento.
+- [ ] Mostrar las fuentes jurídicas utilizadas.
+- [ ] Mostrar la advertencia obligatoria.
+- [ ] Evitar el almacenamiento de datos sensibles.
+- [ ] Publicar la herramienta en una URL accesible.
+
+#### M5 — Evaluación y presentación
+
+- [ ] Realizar una prueba con un usuario.
+- [ ] Utilizar únicamente casos ficticios o datos inventados.
+- [ ] Guardar evidencia de la prueba.
+- [ ] Registrar los comentarios del usuario.
+- [ ] Identificar por lo menos dos limitaciones.
+- [ ] Completar el análisis crítico de la Parte 7.
+- [ ] Preparar la demostración de cinco minutos.
+
+---
+
+### Bitácora de avance semanal
+
+| Semana | Qué hice | Evidencia | Dudas para la clase |
+| --- | --- | --- | --- |
+| 1 | Definí el problema jurídico, los usuarios, el alcance, las fuentes iniciales, el nombre y el lema de ReclamaSalud. También elaboré el plan de desarrollo. | Partes 1 y 2 del README. | ¿El corpus inicial es adecuado y suficientemente delimitado para el proyecto? |
+| 2 | Pendiente: redactar y probar el prompt de sistema. | Pendiente. | Pendiente. |
+| 3 | Pendiente: crear casos de prueba y organizar el corpus. | Pendiente. | Pendiente. |
+| 4 | Pendiente: conectar el sistema RAG y construir la interfaz. | Pendiente. | Pendiente. |
+| 5 | Pendiente: desplegar, probar con un usuario y preparar la presentación. | Pendiente. | Pendiente. |
+
+---
+
+### Estado actual del proyecto
+
+**Hito actual:** M0 — Descripción y plan.
+
+**Estado:** Completado.
+
+**Próximo hito:** M1 — Asistente con instrucciones v1.
+
+En esta etapa todavía no se ha escrito código, no se ha conectado un modelo de lenguaje, no se ha construido el sistema RAG y no existe una interfaz pública. Estas actividades se realizarán en los siguientes hitos.
 ---
 
 ## 🛠️ Parte 3 — Stack técnico recomendado
