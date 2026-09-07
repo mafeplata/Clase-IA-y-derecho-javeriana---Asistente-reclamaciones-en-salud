@@ -115,7 +115,7 @@ with st.container():
     st.markdown("### 1️⃣ Datos de Afiliación y Contacto")
     col1, col2, col3 = st.columns(3)
     with col1:
-        nombre_usuario = st.text_input("Nombre del paciente o peticionario (Usa nombre ficticio):", value="Carmen Silva (Simulado)")
+        nombre_usuario = st.text_input("Nombre del paciente o peticionario (Usa nombre ficticio):", value="", placeholder="Ej. Juan Pérez (Simulado)")
         rol_usuario = st.selectbox("¿Quién presenta la reclamación?", [
             "El paciente directamente",
             "Familiar / Cuidador autorizado del paciente",
@@ -127,11 +127,11 @@ with st.container():
             "Famisanar EPS", "Compensar EPS", "Savia Salud EPS", "Otra EPS"
         ])
         if eps_nombre == "Otra EPS":
-            eps_nombre = st.text_input("Escribe el nombre de la EPS:")
+            eps_nombre = st.text_input("Escribe el nombre de la EPS:", placeholder="Nombre de la EPS")
         regimen = st.selectbox("Régimen de Afiliación:", ["Contributivo (Cotizante)", "Contributivo (Beneficiario)", "Subsidiado"])
     with col3:
-        ciudad = st.text_input("Ciudad / Municipio de residencia:", value="Bogotá D.C.")
-        cedula_simulada = st.text_input("Número de documento ficticio:", value="1.020.304.050")
+        ciudad = st.text_input("Ciudad / Municipio de residencia:", value="", placeholder="Ej. Bogotá D.C.")
+        cedula_simulada = st.text_input("Número de documento ficticio:", value="", placeholder="Ej. 1.020.304.050")
 
     st.divider()
 
@@ -171,13 +171,14 @@ with st.container():
     else:
         col_f1, col_f2 = st.columns([1, 2])
         with col_f1:
-            fecha_orden = st.date_input("Fecha de la orden o fórmula médica:", datetime.date(2026, 1, 15))
-            medico_tratante = st.text_input("Médico o especialidad que ordenó el servicio:", value="Dr. Médico Tratante / Medicina Interna")
-            servicio_solicitado = st.text_input("Nombre del medicamento, cita o examen solicitado:", value="Losartán 50mg y Amlodipino")
+            fecha_orden = st.date_input("Fecha de la orden o fórmula médica:", datetime.date.today())
+            medico_tratante = st.text_input("Médico o especialidad que ordenó el servicio:", value="", placeholder="Ej. Dra. Martínez / Medicina Interna")
+            servicio_solicitado = st.text_input("Nombre del medicamento, cita o examen solicitado:", value="", placeholder="Ej. Losartán 50mg / Cita con Neurología")
         with col_f2:
             relato_hechos = st.text_area(
                 "Describe cronológicamente lo sucedido (trámites realizados, respuestas de la EPS, tiempo de espera y consecuencias en la salud):",
-                value="El 15 de enero de 2026 acudí al punto de dispensación de medicamentos asignado por la EPS con la fórmula médica n.° 88452. Me informaron que el medicamento se encontraba agotado y me sellaron la orden como pendiente. Han transcurrido más de seis semanas, he llamado reiteradamente a la línea telefónica donde solo me dicen que sigue agotado y a la fecha la paciente se encuentra sin dosis, lo que ha generado descompensación en su presión arterial.",
+                value="",
+                placeholder="Describe aquí qué ocurrió: qué fecha acudiste, qué respuesta te dieron en la farmacia o EPS, cuánto tiempo llevas esperando y cómo ha afectado tu salud...",
                 height=140
             )
 
@@ -187,11 +188,11 @@ with st.container():
     st.markdown("### 4️⃣ Documentos y Pruebas Disponibles")
     col_an1, col_an2 = st.columns(2)
     with col_an1:
-        tiene_formula = st.checkbox("Copia de orden médica o fórmula expedida por el médico tratante", value=True)
-        tiene_pendiente = st.checkbox("Constancia de sello de 'pendiente' o comprobante de solicitud ante farmacia", value=True)
+        tiene_formula = st.checkbox("Copia de orden médica o fórmula expedida por el médico tratante", value=False)
+        tiene_pendiente = st.checkbox("Constancia de sello de 'pendiente' o comprobante de solicitud ante farmacia", value=False)
     with col_an2:
         tiene_radicado = st.checkbox("Número de radicado o reclamo previo ante la EPS", value=False)
-        tiene_documento_id = st.checkbox("Copia de documento de identidad del paciente y peticionario", value=True)
+        tiene_documento_id = st.checkbox("Copia de documento de identidad del paciente y peticionario", value=False)
 
 # -----------------------------------------------------------------------------
 # PROCESAMIENTO Y GENERACIÓN DEL DOCUMENTO
@@ -202,9 +203,16 @@ with col_btn2:
     generar_btn = st.button("⚖️ Generar Borrador de Reclamación ante la EPS", type="primary", use_container_width=True, disabled=es_urgencia)
 
 if generar_btn and not es_urgencia:
+    nombre_final = nombre_usuario.strip() if nombre_usuario.strip() else "[NOMBRE DEL PETICIONARIO]"
+    ciudad_final = ciudad.strip() if ciudad.strip() else "[CIUDAD O MUNICIPIO]"
+    cedula_final = cedula_simulada.strip() if cedula_simulada.strip() else "[NÚMERO DE DOCUMENTO]"
+    medico_final = medico_tratante.strip() if medico_tratante.strip() else "[MÉDICO TRATANTE]"
+    servicio_final = servicio_solicitado.strip() if servicio_solicitado.strip() else "[MEDICAMENTO, CITA O EXAMEN SOLICITADO]"
+    relato_final = relato_hechos.strip() if relato_hechos.strip() else "He acudido ante la entidad a solicitar el servicio prescrito sin que a la fecha se haya garantizado oportunamente."
+
     with st.spinner("Consultando el corpus normativo colombiano y estructurando la reclamación..."):
         # 1. Búsqueda RAG sobre el corpus normativo
-        consulta_rag = f"{tipo_barrera} {servicio_solicitado} {relato_hechos}"
+        consulta_rag = f"{tipo_barrera} {servicio_final} {relato_final}"
         documentos_recuperados = rag.search(consulta_rag, top_k=3)
         contexto_rag = rag.get_formatted_context(consulta_rag, top_k=3)
 
@@ -212,28 +220,28 @@ if generar_btn and not es_urgencia:
         borrador_texto = f"""Señores:
 {eps_nombre.upper()}
 Atención: Oficina de Peticiones, Quejas, Reclamos y Solicitudes (PQRS) / Gerencia de Servicio al Cliente
-Ciudad: {ciudad}
+Ciudad: {ciudad_final}
 Canal de radicación: [CORREO ELECTRÓNICO O PORTAL DE PQRD DE LA EPS]
 
 ASUNTO: DERECHO DE PETICIÓN EN INTERÉS PARTICULAR (ARTÍCULO 23 DE LA CONSTITUCIÓN POLÍTICA Y LEY 1755 DE 2015) CON FUNDAMENTO EN EL DERECHO FUNDAMENTAL A LA SALUD (LEY ESTATUTARIA 1751 DE 2015).
 
-Peticionario(a): {nombre_usuario}
-Documento de Identidad: C.C. {cedula_simulada}
+Peticionario(a): {nombre_final}
+Documento de Identidad: C.C. {cedula_final}
 Calidad: Afiliado(a) en régimen {regimen}
 Calidad de actuación: {rol_usuario}
-Municipio de atención: {ciudad}
+Municipio de atención: {ciudad_final}
 
-Yo, {nombre_usuario}, mayor de edad, identificado(a) como aparece al pie de mi firma, en ejercicio del derecho fundamental de petición consagrado en el artículo 23 de la Constitución Política y en la Ley 1755 de 2015, y en garantía del derecho fundamental autónomo e irrenunciable a la salud consagrado en la Ley Estatutaria 1751 de 2015, acudo respetuosamente ante su despacho con fundamento en los siguientes:
+Yo, {nombre_final}, mayor de edad, identificado(a) como aparece al pie de mi firma, en ejercicio del derecho fundamental de petición consagrado en el artículo 23 de la Constitución Política y en la Ley 1755 de 2015, y en garantía del derecho fundamental autónomo e irrenunciable a la salud consagrado en la Ley Estatutaria 1751 de 2015, acudo respetuosamente ante su despacho con fundamento en los siguientes:
 
 I. HECHOS
-1. Me encuentro válidamente afiliado(a) a la entidad {eps_nombre} en calidad de {regimen} en el municipio de {ciudad}.
-2. Con fecha {fecha_orden.strftime('%d de %B de %Y')}, el profesional adscrito a su red prestadora, {medico_tratante}, prescribió y ordenó formalmente el servicio consistente en: {servicio_solicitado}.
-3. Hechos y trámites surtidos: {relato_hechos}
+1. Me encuentro válidamente afiliado(a) a la entidad {eps_nombre} en calidad de {regimen} en el municipio de {ciudad_final}.
+2. Con fecha {fecha_orden.strftime('%d de %B de %Y')}, el profesional adscrito a su red prestadora, {medico_final}, prescribió y ordenó formalmente el servicio consistente en: {servicio_final}.
+3. Hechos y trámites surtidos: {relato_final}
 4. A la fecha de radicación de la presente petición, han transcurrido términos desproporcionados sin que la entidad garantice de manera continua, efectiva y oportuna el servicio ordenado, incurriendo en una dilación administrativa injustificada.
 5. Dicha conducta lesiona el principio de continuidad e integralidad del tratamiento, trasladando de manera indebida a la parte usuaria cargas burocráticas y deficiencias de inventario o contratación que corresponden exclusivamente a la gestión de la EPS.
 
 II. PETICIONES
-1. Se AUTORICE Y GARANTICE DE FORMA INMEDIATA, OPORTUNA Y EFECTIVA la entrega / asignación / realización de: {servicio_solicitado}, prescrito por el médico tratante.
+1. Se AUTORICE Y GARANTICE DE FORMA INMEDIATA, OPORTUNA Y EFECTIVA la entrega / asignación / realización de: {servicio_final}, prescrito por el médico tratante.
 2. Se garantice la CONTINUIDAD E INTEGRALIDAD del tratamiento médico, disponiendo los ciclos, citas de control o entregas subsecuentes sin interrupciones, dilaciones ni exigencia de trámites administrativos no contemplados en la ley.
 3. Se remita respuesta motivada, clara y de fondo a la presente petición en los términos perentorios fijados por la Ley 1755 de 2015 y la Circular Externa 2023151000000010-5 de la Superintendencia Nacional de Salud, informando las gestiones concretas adelantadas y la red de prestadores habilitada.
 
@@ -313,11 +321,11 @@ if "borrador_generado" in st.session_state and not es_urgencia:
 
     with tab_resumen:
         st.markdown("### 📊 Ficha Resumen del Caso")
-        st.write(f"**Peticionario(a):** {nombre_usuario}")
+        st.write(f"**Peticionario(a):** {nombre_final}")
         st.write(f"**EPS Reclamada:** {eps_nombre}")
-        st.write(f"**Régimen y Ciudad:** {regimen} · {ciudad}")
+        st.write(f"**Régimen y Ciudad:** {regimen} · {ciudad_final}")
         st.write(f"**Barrera Identificada:** {tipo_barrera}")
-        st.write(f"**Servicio Involucrado:** {servicio_solicitado}")
+        st.write(f"**Servicio Involucrado:** {servicio_final}")
         st.write(f"**Fecha de prescripción médica:** {fecha_orden.strftime('%d/%m/%Y')}")
 
     with tab_fuentes:
