@@ -356,7 +356,7 @@ Tu meta: **una URL pública** que cualquiera pueda abrir. Para ReclamaSalud (des
 - [x] Dependencias configuradas en `requirements.txt`
 - [x] La advertencia obligatoria y el protocolo de urgencias médicas son **visibles** en la interfaz
 - [x] No hay API keys ni secretos en el código (se gestionan vía `st.secrets` o entrada de usuario)
-- [ ] Conectar en [share.streamlit.io](https://share.streamlit.io/) y anotar la URL pública aquí: **`[https://reclamasalud.streamlit.app]`**
+- [x] URL pública desplegada y funcionando: **[https://clase-ia-y-derecho-javeriana---asistente-reclamaciones-en-salud.streamlit.app/](https://clase-ia-y-derecho-javeriana---asistente-reclamaciones-en-salud.streamlit.app/)**
 
 > El dominio propio (.com, .co) **no es necesario** — la URL gratuita de Streamlit Community Cloud es suficiente y oficial para el curso.
 
