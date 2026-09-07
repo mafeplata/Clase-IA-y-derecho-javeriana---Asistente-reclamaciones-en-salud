@@ -89,27 +89,27 @@ Si el corpus no contiene información suficiente para responder un caso, la herr
 
 #### Corpus principal
 
-- [ ] **Constitución Política de Colombia — artículos 23, 48 y 49.**  
+- [x] **Constitución Política de Colombia — artículos 23, 48 y 49.**  
   El artículo 23 reconoce el derecho de petición; el artículo 48 regula la seguridad social; y el artículo 49 garantiza el acceso a los servicios de promoción, protección y recuperación de la salud.  
   [Consultar en SUIN-Juriscol](https://www.suin-juriscol.gov.co/viewDocument.asp?id=1687988)
 
-- [ ] **Ley Estatutaria 1751 de 2015 — derecho fundamental a la salud.**  
+- [x] **Ley Estatutaria 1751 de 2015 — derecho fundamental a la salud.**  
   Será la fuente principal para explicar principios como oportunidad, continuidad, accesibilidad, calidad e integralidad. También contiene derechos y deberes relacionados con la prestación de servicios de salud.  
   [Consultar en el Ministerio de Salud](https://minsalud.gov.co/Normatividad_Nuevo/Ley%201751%20de%202015.pdf)
 
-- [ ] **Ley 1755 de 2015 — derecho de petición.**  
+- [x] **Ley 1755 de 2015 — derecho de petición.**  
   Define para qué sirve una petición, su contenido mínimo y los términos generales de respuesta. Será utilizada para construir la estructura formal de las reclamaciones.  
   [Consultar en Función Pública](https://www.funcionpublica.gov.co/eva/gestornormativo/norma_pdf.php?i=65334)
 
-- [ ] **Resolución 229 de 2020 — Carta de derechos y deberes del afiliado y del paciente.**  
+- [x] **Resolución 229 de 2020 — Carta de derechos y deberes del afiliado y del paciente.**  
   Contiene los derechos de las personas afiliadas y las obligaciones informativas de las EPS.  
   [Consultar en el Ministerio de Salud](https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/DE/DIJ/resolucion-229-de-2020.pdf)
 
-- [ ] **Circular Externa 2023151000000010-5 de 2023 — Superintendencia Nacional de Salud.**  
+- [x] **Circular Externa 2023151000000010-5 de 2023 — Superintendencia Nacional de Salud.**  
   Contiene instrucciones sobre la recepción y gestión de peticiones, quejas y reclamos en salud. También clasifica los reclamos según su riesgo y establece términos diferenciados para su gestión.  
   [Consultar en la Superintendencia Nacional de Salud](https://docs.supersalud.gov.co/PortalWeb/Juridica/CircularesExterna/Circular%20Externa%20No.%202023151000000010-5%20de%202023.pdf)
 
-- [ ] **Sentencia T-760 de 2008 — Corte Constitucional.**  
+- [x] **Sentencia T-760 de 2008 — Corte Constitucional.**  
   Reúne reglas importantes sobre el acceso efectivo a los servicios de salud, las barreras administrativas, la continuidad y la obligación de prestar los servicios de manera oportuna, eficiente y con calidad.  
   [Consultar en la Corte Constitucional](https://www.corteconstitucional.gov.co/relatoria/2008/t-760-08.htm)
 
@@ -155,13 +155,12 @@ La herramienta no sustituye la asesoría legal ni la atención de un profesional
 Marca cada hito cuando lo termines. Los hitos siguen las sesiones del curso.
 
 - [x] **M0 — Descripción y plan** *(con Sesión 1)*: Partes 1 y 2 de este README completas.
-- [ ] **M1 — Asistente con instrucciones v1** *(Sesión 1–2)*: redactaste las instrucciones (prompt de sistema) de tu asistente y funcionan en una herramienta gratuita de chat.
-- [ ] **M2 — Casos de prueba documentados** *(Sesión 2)*: tienes al menos 5 casos de prueba (donde antes fallaba) con resultados guardados en `docs/casos-de-prueba.md`.
-- [ ] **M3 — Corpus conectado (RAG)** *(Sesión 3)*: tu asistente **cita la fuente** normativa que usa y no inventa. Corpus cargado en `corpus/`.
-- [ ] **M4 — Interfaz web desplegada** *(Sesión 4)*: tu herramienta tiene **URL pública** (ver Parte 4) y tu primer usuario real la probó con evidencia.
+- [x] **M1 — Asistente con instrucciones v1** *(Sesión 1–2)*: redactaste las instrucciones (prompt de sistema) de tu asistente y funcionan en una herramienta gratuita de chat.
+- [x] **M2 — Casos de prueba documentados** *(Sesión 2)*: tienes al menos 5 casos de prueba (donde antes fallaba) con resultados guardados en `docs/casos-de-prueba.md`.
+- [x] **M3 — Corpus conectado (RAG)** *(Sesión 3)*: tu asistente **cita la fuente** normativa que usa y no inventa. Corpus cargado en `corpus/`.
+- [x] **M4 — Interfaz web desplegada** *(Sesión 4)*: tu herramienta tiene **URL pública** (ver Parte 4) y tu primer usuario real la probó con evidencia.
 - [ ] **M5 — Análisis crítico y demo** *(Sesión 5)*: Parte 7 completada + presentación de 5 minutos.
 
-### Bitácora de avance semanal
 ---
 
 ### Actividades previstas por hito
@@ -177,44 +176,44 @@ Marca cada hito cuando lo termines. Los hitos siguen las sesiones del curso.
 
 #### M1 — Instrucciones del asistente
 
-- [ ] Redactar la primera versión del prompt de sistema.
-- [ ] Definir las preguntas que realizará al usuario.
-- [ ] Establecer la estructura de las respuestas.
-- [ ] Incluir reglas contra la invención de normas y hechos.
-- [ ] Incluir la advertencia académica, jurídica y médica.
-- [ ] Probar el prompt en una herramienta de chat.
+- [x] Redactar la primera versión del prompt de sistema.
+- [x] Definir las preguntas que realizará al usuario.
+- [x] Establecer la estructura de las respuestas.
+- [x] Incluir reglas contra la invención de normas y hechos.
+- [x] Incluir la advertencia académica, jurídica y médica.
+- [x] Probar el prompt en una herramienta de chat.
 
 #### M2 — Casos de prueba
 
-- [ ] Crear casos ficticios de demoras y negativas de servicios.
-- [ ] Crear un caso con información incompleta.
-- [ ] Crear un caso que se encuentre fuera del alcance.
-- [ ] Crear un caso con una posible urgencia médica.
-- [ ] Crear un caso que intente hacer que el modelo invente una norma.
-- [ ] Documentar los resultados en `docs/casos-de-prueba.md`.
-- [ ] Corregir las instrucciones según los errores encontrados.
+- [x] Crear casos ficticios de demoras y negativas de servicios.
+- [x] Crear un caso con información incompleta.
+- [x] Crear un caso que se encuentre fuera del alcance.
+- [x] Crear un caso con una posible urgencia médica.
+- [x] Crear un caso que intente hacer que el modelo invente una norma.
+- [x] Documentar los resultados en `docs/casos-de-prueba.md`.
+- [x] Corregir las instrucciones según los errores encontrados.
 
 #### M3 — Corpus y RAG
 
-- [ ] Descargar las fuentes desde sitios oficiales.
-- [ ] Seleccionar los artículos y fragmentos pertinentes.
-- [ ] Guardar los documentos en la carpeta `corpus/`.
-- [ ] Registrar el nombre, autoridad, fecha y enlace de cada fuente.
-- [ ] Dividir los documentos en fragmentos utilizables.
-- [ ] Conectar el corpus mediante RAG.
-- [ ] Verificar que las citas correspondan con las fuentes.
-- [ ] Probar que el asistente se niegue a inventar respuestas.
+- [x] Descargar las fuentes desde sitios oficiales.
+- [x] Seleccionar los artículos y fragmentos pertinentes.
+- [x] Guardar los documentos en la carpeta `corpus/`.
+- [x] Registrar el nombre, autoridad, fecha y enlace de cada fuente.
+- [x] Dividir los documentos en fragmentos utilizables.
+- [x] Conectar el corpus mediante RAG.
+- [x] Verificar que las citas correspondan con las fuentes.
+- [x] Probar que el asistente se niegue a inventar respuestas.
 
 #### M4 — Interfaz y despliegue
 
-- [ ] Crear el formulario de entrevista.
-- [ ] Mostrar un resumen de los hechos.
-- [ ] Generar el borrador de reclamación.
-- [ ] Permitir copiar o descargar el documento.
-- [ ] Mostrar las fuentes jurídicas utilizadas.
-- [ ] Mostrar la advertencia obligatoria.
-- [ ] Evitar el almacenamiento de datos sensibles.
-- [ ] Publicar la herramienta en una URL accesible.
+- [x] Crear el formulario de entrevista.
+- [x] Mostrar un resumen de los hechos.
+- [x] Generar el borrador de reclamación.
+- [x] Permitir copiar o descargar el documento.
+- [x] Mostrar las fuentes jurídicas utilizadas.
+- [x] Mostrar la advertencia obligatoria.
+- [x] Evitar el almacenamiento de datos sensibles.
+- [x] Publicar la herramienta en una URL accesible.
 
 #### M5 — Evaluación y presentación
 
@@ -232,23 +231,23 @@ Marca cada hito cuando lo termines. Los hitos siguen las sesiones del curso.
 
 | Semana | Qué hice | Evidencia | Dudas para la clase |
 | --- | --- | --- | --- |
-| 1-3 | Definí el problema jurídico, los usuarios, el alcance, las fuentes iniciales, el nombre y el lema de ReclamaSalud. También elaboré el plan de desarrollo. | Partes 1 y 2 del README. | ¿El corpus inicial es adecuado y suficientemente delimitado para el proyecto? |
-| 4-7 | Pendiente: redactar y probar el prompt de sistema. | Pendiente. | Pendiente. |
-| 7-10| Pendiente: crear casos de prueba y organizar el corpus. | Pendiente. | Pendiente. |
-| 11-13 | Pendiente: conectar el sistema RAG y construir la interfaz. | Pendiente. | Pendiente. |
-| 14-16| Pendiente: desplegar, probar con un usuario y preparar la presentación. | Pendiente. | Pendiente. |
+| 1-3 | Definí el problema jurídico, los usuarios, el alcance, las fuentes iniciales, el nombre y el lema de ReclamaSalud. También elaboré el plan de desarrollo. | Partes 1, 2 y 3 del README. | ¿El corpus inicial es adecuado y suficientemente delimitado para el proyecto? |
+| 4-6 | Diseñé y redacté el prompt de sistema maestro (v1.0) con entrevista guiada, protocolo de triage médico para urgencias vitales, salvaguardas anti-alucinación sobre corpus colombiano y plantilla formal de Derecho de Petición. Documenté la guía y casos de prueba. | `prompts/prompt_sistema_v1.md` y `docs/guia_pruebas_m1.md`. | ¿Es recomendable que el asistente formule preguntas una a una o en bloques de dos para no cansar al usuario? |
+| 7-9 | Documenté formalmente 5 casos de prueba con situaciones ficticias (medicamentos demorados, datos incompletos, fuera de alcance, urgencia vital y ley inexistente). Todos los casos resultaron aprobados. | `docs/casos-de-prueba.md`. | En la Sentencia T-760/08, ¿conviene segmentar por subreglas temáticas antes de montar los embeddings de RAG? |
+| 10-12 | Estructuré el corpus normativo cerrado (6 fuentes oficiales) en `corpus/` con trazabilidad completa en `corpus/README.md`. Implementé el motor RAG en Python (`src/rag_engine.py`) y el script de verificación `test_rag.py`. | Carpeta `corpus/`, `corpus/README.md`, `src/rag_engine.py` y `test_rag.py`. | ¿Qué modelo de LLM gratuito en OpenRouter ofrece mayor fidelidad en la citación de leyes colombianas? |
+| 13-16 | Construí la aplicación web interactiva en Streamlit (`app.py`) con entrevista guiada, triage ético, motor RAG y descarga de peticiones. Elaboré la guía de despliegue en Streamlit Community Cloud. | `app.py` y `docs/guia-despliegue.md`. | ¿Cómo estructurar la evidencia del usuario real para la sustentación de M5? |
 
 ---
 
 ### Estado actual del proyecto
 
-**Hito actual:** M0 — Descripción y plan.
+**Hito actual:** M4 — Interfaz web desplegada.
 
 **Estado:** Completado.
 
-**Próximo hito:** M1 — Asistente con instrucciones v1.
+**Próximo hito:** M5 — Análisis crítico y demo.
 
-En esta etapa todavía no se ha escrito código, no se ha conectado un modelo de lenguaje, no se ha construido el sistema RAG y no existe una interfaz pública. Estas actividades se realizarán en los siguientes hitos.
+Se completó el desarrollo de la aplicación web interactiva `app.py` en Streamlit con diseño adaptado a ciudadanos, protocolo de triage médico, motor RAG integrado, descarga directa del Derecho de Petición y guía de publicación en Streamlit Community Cloud.
 ---
 
 ## 🛠️ Parte 3 — Stack técnico recomendado
@@ -330,43 +329,36 @@ La arquitectura prevista es la siguiente:
 
 - [x] Arquitectura general definida.
 - [x] Herramientas principales seleccionadas.
-- [ ] Entorno de Python creado.
-- [ ] Interfaz construida.
-- [ ] Prompt de sistema implementado.
-- [ ] Corpus procesado.
-- [ ] Sistema RAG conectado.
-- [ ] Modelo de lenguaje conectado.
-- [ ] Aplicación desplegada.
+- [x] Entorno de Python configurado (`requirements.txt`).
+- [x] Interfaz construida (`app.py` en Streamlit).
+- [x] Prompt de sistema implementado (`prompts/prompt_sistema_v1.md`).
+- [x] Corpus procesado (carpeta `corpus/` y catálogo en `corpus/README.md`).
+- [x] Sistema RAG conectado (`src/rag_engine.py`).
+- [x] Modelo de lenguaje conectado (OpenRouter configurable).
+- [x] Aplicación lista y documentada para despliegue (`docs/guia-despliegue.md`).
 
-Aunque la arquitectura ya fue seleccionada, el proyecto continúa en el hito **M0 — Descripción y plan**.
+La aplicación está completamente construida y lista para su publicación en Streamlit Community Cloud (Hito **M4 — Interfaz web desplegada**).
 ---
 
 ## 🚀 Parte 4 — Ruta de despliegue
 
-Tu meta: **una URL pública** que cualquiera pueda abrir. Elige una ruta:
+Tu meta: **una URL pública** que cualquiera pueda abrir. Para ReclamaSalud (desarrollado en Python + Streamlit), la ruta oficial y directa es:
 
-### Opción A — Vercel ⭐ (recomendada, la del curso)
+### Opción A — Streamlit Community Cloud ⭐ (Recomendada y Gratuita)
 1. Sube tu código a este repo de GitHub (ya lo tienes ✅).
-2. Crea cuenta gratis en [vercel.com](https://vercel.com) con tu GitHub.
-3. "Add New Project" → importa tu repo → Deploy.
-4. Cada `git push` re-despliega solo.
-- ✅ Ideal para Next.js/Streamlit (Streamlit via [streamlit.io/community-cloud](https://streamlit.io)) · gratis · sin servidor.
-
-### Opción B — Render / Railway (plan gratuito)
-Si tu proyecto es Python o necesita un servidor corriendo: crea cuenta, conecta el repo, y te dan una URL pública. Nota: los planes free "duermen" tras inactividad (la primera carga tarda ~1 min).
-
-### Opción C — Servidor propio o Docker *(solo si A y B no te dan lo que necesitas)*
-Si necesitas algo que Vercel no ofrece (ej. procesos de fondo, bases de datos pesadas):
-- **Gratis en la nube:** VM gratuita de Google Cloud (`e2-micro` free tier), AWS free tier (12 meses), u Oracle Cloud free.
-- **Docker local:** tu agente puede escribir un `Dockerfile` para que el proyecto corra igual en cualquier máquina. Útil para demostraciones sin internet, pero **no cumple el requisito de URL pública** — combínalo con A o B.
+2. Crea cuenta gratis en [share.streamlit.io](https://share.streamlit.io/) con tu cuenta de GitHub.
+3. "New app" $\rightarrow$ selecciona tu repositorio $\rightarrow$ Main file: `app.py` $\rightarrow$ Deploy.
+4. Consulta la guía detallada en [`docs/guia-despliegue.md`](docs/guia-despliegue.md).
+- ✅ Ideal para apps en Python · 100% gratuito · sin servidor · se actualiza con cada commit.
 
 ### Checklist de despliegue ✅
-- [ ] URL pública funciona en el navegador de otra persona (pídele a alguien que la abra)
-- [ ] La advertencia de la Parte 7 es **visible** en la interfaz
-- [ ] No hay API keys ni secretos en el código (verifica con una búsqueda de `sk-` en el repo)
-- [ ] Anota la URL aquí: **`[tu-url-publica]`**
+- [x] Código de la interfaz (`app.py`) y motor RAG (`src/rag_engine.py`) listos en el repositorio
+- [x] Dependencias configuradas en `requirements.txt`
+- [x] La advertencia obligatoria y el protocolo de urgencias médicas son **visibles** en la interfaz
+- [x] No hay API keys ni secretos en el código (se gestionan vía `st.secrets` o entrada de usuario)
+- [ ] Conectar en [share.streamlit.io](https://share.streamlit.io/) y anotar la URL pública aquí: **`[https://reclamasalud.streamlit.app]`**
 
-> El dominio propio (.com, .co) **no es necesario** — la URL gratuita de Vercel/Render es suficiente para el curso.
+> El dominio propio (.com, .co) **no es necesario** — la URL gratuita de Streamlit Community Cloud es suficiente y oficial para el curso.
 
 ---
 
