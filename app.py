@@ -14,56 +14,244 @@ Aplicación interactiva en Streamlit con:
 """
 
 import os
-import json
+import sys
+import re
 import datetime
 import requests
 import streamlit as st
-from src.rag_engine import CorpusRAG
-from src.eps_directory import get_eps_info, CANAL_SUPERSALUD, DIRECTORIO_EPS
-from src.pdf_generator import generate_petition_pdf
 
-# Configuración de página
-st.set_page_config(
-    page_title="ReclamaSalud — Asistente de Reclamaciones",
-    page_icon="⚖️",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# Inicializar motor RAG
-@st.cache_resource
-def get_rag():
-    return CorpusRAG()
-
-rag = get_rag()
+# Asegurar que el directorio raíz del proyecto esté en sys.path
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
 
 # -----------------------------------------------------------------------------
-# FUNCIÓN DE CÁLCULO DE TÉRMINOS LEGALES Y SEMÁFORO
+# 1. MOTOR RAG (Importación con fallback autónomo para evitar caídas)
+# -----------------------------------------------------------------------------
+try:
+    from src.rag_engine import CorpusRAG
+except Exception:
+    class CorpusRAG:
+        """Fallback local autónomo de RAG si no se encuentra la carpeta src/."""
+        def __init__(self, corpus_dir=None):
+            self.corpus_dir = os.path.join(BASE_DIR, "corpus") if corpus_dir is None else corpus_dir
+            self.documents = []
+            self._load()
+
+        def _load(self):
+            if not os.path.exists(self.corpus_dir):
+                return
+            for fname in sorted(os.listdir(self.corpus_dir)):
+                if not fname.endswith(".txt"):
+                    continue
+                fpath = os.path.join(self.corpus_dir, fname)
+                try:
+                    with open(fpath, "r", encoding="utf-8") as f:
+                        content = f.read()
+                    lines = content.split("\n")
+                    header = lines[0].replace("#", "").strip() if lines else fname
+                    chunks = re.split(r"\n(?=(?:ARTÍCULO\s+\d+|[0-9]+\.\s+[A-ZÁÉÍÓÚÑ]))", content)
+                    for idx, c in enumerate(chunks):
+                        c_clean = c.strip()
+                        if not c_clean or c_clean.startswith("#"):
+                            continue
+                        first_l = c_clean.split("\n")[0].replace("#", "").strip()
+                        self.documents.append({
+                            "id": f"{fname}_{idx}",
+                            "source_title": header,
+                            "section": first_l,
+                            "text": c_clean
+                        })
+                except Exception:
+                    pass
+
+        def search(self, query, top_k=3):
+            if not self.documents:
+                return []
+            q_terms = set(re.findall(r"\b\w{4,}\b", query.lower()))
+            scored = []
+            for d in self.documents:
+                text_l = (d["text"] + " " + d["section"]).lower()
+                score = sum(text_l.count(t) for t in q_terms)
+                if score > 0:
+                    scored.append((score, d))
+            scored.sort(key=lambda x: x[0], reverse=True)
+            return [d for _, d in scored[:top_k]]
+
+        def get_formatted_context(self, query, top_k=3):
+            res = self.search(query, top_k=top_k)
+            if not res:
+                return "Corpus oficial colombiano consultado."
+            parts = [f"[{d['source_title']} - {d['section']}]:\n{d['text']}" for d in res]
+            return "\n\n".join(parts)
+
+# -----------------------------------------------------------------------------
+# 2. DIRECTORIO OFICIAL DE CANALES DE RADICACIÓN POR EPS
+# -----------------------------------------------------------------------------
+DIRECTORIO_EPS = {
+    "EPS Sanitas": {
+        "nombre_completo": "Entidad Promotora de Salud Sanitas S.A.S.",
+        "portal_pqrs": "https://www.epssanitas.com/usuarios/web/nuevo-portal-eps/pqrs",
+        "telefono_nacional": "01 8000 919 100",
+        "telefono_bogota": "(601) 375 9000",
+        "consejo_radicacion": "Radica por el portal web oficial en 'Radicar PQRS' o de forma presencial en tu centro de atención, exigiendo copia sellada con fecha y número de radicado."
+    },
+    "Nueva EPS": {
+        "nombre_completo": "Nueva EPS S.A.",
+        "portal_pqrs": "https://www.nuevaeps.com.co/canales-atencion/pqrd",
+        "telefono_nacional": "01 8000 954 400 (Contributivo) / 01 8000 952 000 (Subsidiado)",
+        "telefono_bogota": "(601) 307 7022",
+        "consejo_radicacion": "Ingresa al portal de PQRD de Nueva EPS o radica por escrito en la Oficina de Atención al Afiliado más cercana."
+    },
+    "Sura EPS": {
+        "nombre_completo": "EPS y Medicina Prepagada Suramericana S.A.",
+        "portal_pqrs": "https://www.epssura.com/servicios-en-linea/pqrs",
+        "telefono_nacional": "01 8000 519 519",
+        "telefono_bogota": "(601) 489 7941",
+        "consejo_radicacion": "Radica a través de 'Radicar Solicitudes y Reclamos' en www.epssura.com o por su línea telefónica nacional."
+    },
+    "Salud Total EPS": {
+        "nombre_completo": "Salud Total EPS del Régimen Contributivo S.A.",
+        "portal_pqrs": "https://saludtotal.com.co/peticiones-quejas-y-reclamos/",
+        "telefono_nacional": "01 8000 1 14524",
+        "telefono_bogota": "(601) 485 4555",
+        "consejo_radicacion": "Utiliza el formulario PQRD en saludtotal.com.co para recibir un radicado virtual inmediato con seguimiento en tiempo real."
+    },
+    "Famisanar EPS": {
+        "nombre_completo": "EPS Famisanar SAS",
+        "portal_pqrs": "https://www.famisanar.com.co/canales-de-atencion/pqrd/",
+        "telefono_nacional": "01 8000 116 662 (Contributivo) / 01 8000 914 202 (Subsidiado)",
+        "telefono_bogota": "(601) 307 8069",
+        "consejo_radicacion": "Radica por el formulario PQRD de Famisanar o presencialmente en los Centros de Atención al Usuario (CAU)."
+    },
+    "Compensar EPS": {
+        "nombre_completo": "Compensar Entidad Promotora de Salud",
+        "portal_pqrs": "https://www.compensar.com/salud/pqrs",
+        "telefono_nacional": "01 8000 915 202",
+        "telefono_bogota": "(601) 444 1234",
+        "consejo_radicacion": "Radica en el formulario digital en compensar.com/salud o en la sede ambulatoria donde consultas habitualmente."
+    },
+    "Savia Salud EPS": {
+        "nombre_completo": "Alianza Medellín Antioquia EPS S.A.S. - Savia Salud",
+        "portal_pqrs": "https://www.saviasaludeps.com/servicios-en-linea/pqrd",
+        "telefono_nacional": "01 8000 423 683",
+        "telefono_bogota": "Línea Medellín: (604) 448 1747",
+        "consejo_radicacion": "Radica mediante el formulario PQRD en www.saviasaludeps.com o en los puntos de atención municipal."
+    }
+}
+
+CANAL_SUPERSALUD = {
+    "entidad": "Superintendencia Nacional de Salud (Supersalud)",
+    "portal_pqrs": "https://www.supersalud.gov.co/es-co/Paginas/Protecci%C3%B3n%20al%20Usuario/atencion-al-ciudadano.html",
+    "linea_gratuita_nacional": "01 8000 513 700",
+    "telefono_bogota": "(601) 744 2000"
+}
+
+def get_eps_info(nombre_eps: str) -> dict:
+    for key, data in DIRECTORIO_EPS.items():
+        if key.lower() in nombre_eps.lower():
+            return data
+    return {
+        "nombre_completo": nombre_eps,
+        "portal_pqrs": "https://www.supersalud.gov.co",
+        "telefono_nacional": "Línea de atención de la entidad",
+        "telefono_bogota": "Consultar en la página oficial",
+        "consejo_radicacion": "Radica por la página web de la EPS o en su sede de atención al usuario exigiendo copia con sello y radicado."
+    }
+
+# -----------------------------------------------------------------------------
+# 3. GENERADOR DE PDF FORMAL (Con soporte de fpdf2)
+# -----------------------------------------------------------------------------
+try:
+    from fpdf import FPDF
+    FPDF_INSTALADO = True
+except ImportError:
+    FPDF_INSTALADO = False
+
+def generar_pdf_derecho_peticion(texto_peticion: str) -> bytes:
+    """Genera un archivo PDF con formato judicial elegante a partir del texto."""
+    if not FPDF_INSTALADO:
+        return b""
+
+    class PDFDoc(FPDF):
+        def header(self):
+            self.set_font("Helvetica", "B", 8)
+            self.set_text_color(100, 110, 120)
+            self.cell(0, 5, "RECLAMASALUD — ASISTENTE ACADEMICO | PONTIFICIA UNIVERSIDAD JAVERIANA", 0, 1, "C")
+            self.set_draw_color(180, 190, 200)
+            self.line(20, 14, 190, 14)
+            self.ln(5)
+
+        def footer(self):
+            self.set_y(-15)
+            self.set_font("Helvetica", "I", 8)
+            self.set_text_color(140, 140, 140)
+            self.cell(0, 10, f"Pagina {self.page_no()}/{{nb}} - Ejercicio del Derecho de Peticion (Ley 1755 de 2015)", 0, 0, "C")
+
+    # Limpieza de caracteres para latin-1
+    t = texto_peticion
+    for k, v in {"—": "-", "–": "-", "“": '"', "”": '"', "‘": "'", "’": "'", "…": "...", "•": "*"}.items():
+        t = t.replace(k, v)
+    t = re.sub(r"[^\x00-\xFF]", "", t)
+
+    pdf = PDFDoc(orientation="P", unit="mm", format="A4")
+    pdf.set_margins(left=20, top=20, right=20)
+    pdf.set_auto_page_break(auto=True, margin=18)
+    pdf.alias_nb_pages()
+    pdf.add_page()
+
+    for line in t.split("\n"):
+        s = line.strip()
+        if s.startswith("====") or s.startswith("----"):
+            pdf.ln(2)
+            pdf.set_draw_color(200, 200, 200)
+            pdf.line(20, pdf.get_y(), 190, pdf.get_y())
+            pdf.ln(3)
+        elif re.match(r"^(I|II|III|IV|V)\.\s+[A-Z\s]+", s) or s.startswith("ASUNTO:"):
+            pdf.ln(3)
+            pdf.set_font("Helvetica", "B", 10)
+            pdf.set_text_color(15, 30, 60)
+            pdf.multi_cell(0, 5, s)
+            pdf.ln(1)
+        elif s.startswith("Señores:") or s.startswith("Senores:") or s.startswith("Peticionario") or s.startswith("Atentamente,"):
+            pdf.set_font("Helvetica", "B", 9.5)
+            pdf.set_text_color(30, 40, 50)
+            pdf.multi_cell(0, 5, s)
+            pdf.ln(1)
+        elif "ADVERTENCIA:" in s:
+            pdf.ln(2)
+            pdf.set_font("Helvetica", "I", 8)
+            pdf.set_text_color(120, 30, 30)
+            pdf.multi_cell(0, 4, s)
+        else:
+            pdf.set_font("Helvetica", "", 9.5)
+            pdf.set_text_color(20, 25, 30)
+            if s:
+                pdf.multi_cell(0, 5, s)
+            else:
+                pdf.ln(2)
+
+    return bytes(pdf.output())
+
+# -----------------------------------------------------------------------------
+# 4. CALCULADORA DE TÉRMINOS LEGALES Y SEMÁFORO
 # -----------------------------------------------------------------------------
 def calcular_terminos_legales(fecha_solicitud, tipo_barrera):
-    """
-    Calcula los días transcurridos y determina el estado legal del reclamo
-    conforme a la Resolución 229/2020, Ley 1755/2015 y Circular Supersalud 2023.
-    """
     hoy = datetime.date.today()
     if fecha_solicitud > hoy:
         return 0, 0, "verde", "Fecha futura o del día de hoy."
 
     dias_calendario = (hoy - fecha_solicitud).days
-    
-    # Conteo de días hábiles aproximados (excluyendo sábados y domingos)
     dias_habiles = 0
     cur = fecha_solicitud
     while cur < hoy:
         cur += datetime.timedelta(days=1)
-        if cur.weekday() < 5:  # Lunes a Viernes
+        if cur.weekday() < 5:
             dias_habiles += 1
 
     es_medicamento = "medicamento" in tipo_barrera.lower()
 
     if es_medicamento:
-        # En medicamentos, la norma exige entrega en máximo 48h (Res. 229/2020 y Res. 1604/2013)
-        # y 48-72h para patologías crónicas según Circular Supersalud 2023
         if dias_calendario <= 2:
             estado = "verde"
             mensaje = f"🟢 DENTRO DEL TÉRMINO LEGAL: Han transcurrido {dias_calendario} de 2 días máximos permitidos para entrega de fórmulas pendientes (Res. 229 de 2020)."
@@ -72,9 +260,8 @@ def calcular_terminos_legales(fecha_solicitud, tipo_barrera):
             mensaje = f"🟡 PLAZO DE ENTREGA VENCIDO: Han transcurrido {dias_calendario} días desde la orden. La farmacia/EPS está en mora. Debes radicar de inmediato la petición formal."
         else:
             estado = "rojo"
-            mensaje = f"🔴 MORA GRAVE E INJUSTIFICADA: Han transcurrido {dias_calendario} días sin medicamentos. Hay vulneración de los principios de oportunidad y continuidad (Ley 1751/2015). Se habilita queja inmediata ante Supersalud y Acción de Tutela."
+            mensaje = f"🔴 MORA GRAVE E INJUSTIFICADA: Han transcurrido {dias_calendario} días sin medicamentos. Hay vulneración de los principios de oportunidad y continuidad (Ley 1751/2015). Se habilita queja ante Supersalud y Acción de Tutela."
     else:
-        # Término general de 15 días hábiles para peticiones (Ley 1755 de 2015)
         if dias_habiles <= 10:
             estado = "verde"
             mensaje = f"🟢 DENTRO DEL TÉRMINO ORDINARIO: Han transcurrido {dias_habiles} de 15 días hábiles. La entidad aún dispone de plazo legal para gestionar la solicitud."
@@ -83,13 +270,27 @@ def calcular_terminos_legales(fecha_solicitud, tipo_barrera):
             mensaje = f"🟡 TÉRMINO PRÓXIMO A VENCER: Han transcurrido {dias_habiles} de 15 días hábiles. Si no recibes respuesta en los próximos días, se configurará silencio administrativo."
         else:
             estado = "rojo"
-            mensaje = f"🔴 TÉRMINO LEGAL VENCIDO: Han transcurrido {dias_habiles} días hábiles (más de los 15 permitidos por la Ley 1755 de 2015). Se ha configurado una dilación administrativa injustificada que vulnera el debido proceso y la salud."
+            mensaje = f"🔴 TÉRMINO LEGAL VENCIDO: Han transcurrido {dias_habiles} días hábiles (más de los 15 permitidos por la Ley 1755 de 2015). Se ha configurado una dilación administrativa injustificada."
 
     return dias_calendario, dias_habiles, estado, mensaje
 
 # -----------------------------------------------------------------------------
-# ADVERTENCIA OBLIGATORIA (Banner superior permanente)
+# CONFIGURACIÓN E INTERFAZ STREAMLIT
 # -----------------------------------------------------------------------------
+st.set_page_config(
+    page_title="ReclamaSalud — Asistente de Reclamaciones",
+    page_icon="⚖️",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+@st.cache_resource
+def get_rag():
+    return CorpusRAG()
+
+rag = get_rag()
+
+# Banner superior permanente
 st.warning(
     "⚖️ **ADVERTENCIA OBLIGATORIA (EJERCICIO ACADÉMICO):**\n\n"
     "Esta herramienta es un ejercicio estrictamente académico desarrollado en el marco de la clase "
@@ -99,9 +300,7 @@ st.warning(
     "de inmediato con la línea 123 o acuda al centro asistencial de urgencias más cercano."
 )
 
-# -----------------------------------------------------------------------------
-# BARRA LATERAL (Sidebar)
-# -----------------------------------------------------------------------------
+# Barra lateral
 with st.sidebar:
     st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Logo_Pontificia_Universidad_Javeriana.svg/1200px-Logo_Pontificia_Universidad_Javeriana.svg.png", width=160)
     st.title("⚖️ ReclamaSalud")
@@ -109,7 +308,6 @@ with st.sidebar:
     st.markdown("**Estudiante:** Maria Fernanda Plata Silva  \n**Docente:** Pedro Ardila")
     
     st.divider()
-    
     st.markdown("### 🔒 Privacidad y Datos (Ley 1581/12)")
     st.info(
         "Esta versión académica **no almacena historias clínicas ni datos personales** en bases de datos. "
@@ -117,7 +315,6 @@ with st.sidebar:
     )
     
     st.divider()
-    
     st.markdown("### ⚙️ Configuración del Modelo")
     api_key = st.text_input(
         "OpenRouter API Key (Opcional)",
@@ -128,11 +325,7 @@ with st.sidebar:
     
     selected_model = st.selectbox(
         "Modelo de Lenguaje (OpenRouter)",
-        [
-            "google/gemini-2.0-flash-exp:free",
-            "meta-llama/llama-3.3-70b-instruct:free",
-            "mistralai/mistral-7b-instruct:free"
-        ],
+        ["google/gemini-2.0-flash-exp:free", "meta-llama/llama-3.3-70b-instruct:free", "mistralai/mistral-7b-instruct:free"],
         index=0
     )
     
@@ -149,9 +342,7 @@ with st.sidebar:
             "- Sentencia T-760 de 2008 (Corte Const.)"
         )
 
-# -----------------------------------------------------------------------------
-# ENCABEZADO PRINCIPAL
-# -----------------------------------------------------------------------------
+# Encabezado principal
 col_logo, col_text = st.columns([1, 6])
 with col_logo:
     st.markdown("# 🏥")
@@ -161,14 +352,12 @@ with col_text:
 
 st.divider()
 
-# -----------------------------------------------------------------------------
-# ENTREVISTA GUIADA POR PASOS
-# -----------------------------------------------------------------------------
+# Entrevista guiada
 st.subheader("📋 Entrevista Guiada de Reclamación")
 st.write("Diligencia los siguientes campos para que el asistente organice los hechos, calcule los términos de vencimiento y fundamente la reclamación jurídica.")
 
 with st.container():
-    # --- BLOQUE 1: DATOS DE AFILIACIÓN ---
+    # Bloque 1: Datos de Afiliación
     st.markdown("### 1️⃣ Datos de Afiliación y Contacto")
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -190,7 +379,7 @@ with st.container():
         ciudad = st.text_input("Ciudad / Municipio de residencia:", value="", placeholder="Ej. Bogotá D.C.")
         cedula_simulada = st.text_input("Número de documento ficticio:", value="", placeholder="Ej. 1.020.304.050")
 
-    # --- DIRECTORIO INTELIGENTE DE LA EPS SELECCIONADA ---
+    # Directorio de radicación de la EPS seleccionada
     info_eps = get_eps_info(eps_nombre)
     with st.expander(f"📮 Canales oficiales de radicación de {eps_nombre}", expanded=False):
         c_eps1, c_eps2 = st.columns([2, 1])
@@ -204,7 +393,7 @@ with st.container():
 
     st.divider()
 
-    # --- BLOQUE 2: TIPO DE PROBLEMA EN SALUD ---
+    # Bloque 2: Tipo de Problema
     st.markdown("### 2️⃣ Tipo de Barrera o Problema con la EPS")
     tipo_barrera = st.selectbox(
         "Selecciona el problema principal que experimentas:",
@@ -219,10 +408,9 @@ with st.container():
 
     st.divider()
 
-    # --- BLOQUE 3: TRIAGE ÉTICO, CRONOLOGÍA Y SEMÁFORO DE TÉRMINOS ---
+    # Bloque 3: Triage, Cronología y Semáforo
     st.markdown("### 3️⃣ Cronología de los Hechos y Semáforo de Términos Legales")
 
-    # DETECTOR DE ALARMA MÉDICA (TRIAGE ÉTICO)
     es_urgencia = st.checkbox(
         "⚠️ **ALERTA MÉDICA:** Marque esta casilla si el paciente presenta actualmente dolor torácico agudo (pecho), dificultad respiratoria severa, pérdida de conocimiento o riesgo vital inminente.",
         value=False
@@ -244,7 +432,7 @@ with st.container():
             medico_tratante = st.text_input("Médico o especialidad que ordenó el servicio:", value="", placeholder="Ej. Dra. Martínez / Medicina Interna")
             servicio_solicitado = st.text_input("Nombre del medicamento, cita o examen solicitado:", value="", placeholder="Ej. Losartán 50mg / Cita con Neurología")
             
-            # --- CALCULADORA INTELIGENTE Y SEMÁFORO ---
+            # Semáforo de Término Legal
             d_cal, d_hab, est_semaforo, msg_semaforo = calcular_terminos_legales(fecha_orden, tipo_barrera)
             st.markdown("#### 🚦 Semáforo de Término Legal")
             if est_semaforo == "verde":
@@ -264,7 +452,7 @@ with st.container():
 
     st.divider()
 
-    # --- BLOQUE 4: DOCUMENTOS DE SOPORTE ---
+    # Bloque 4: Documentos de Soporte
     st.markdown("### 4️⃣ Documentos y Pruebas Disponibles")
     col_an1, col_an2 = st.columns(2)
     with col_an1:
@@ -274,9 +462,7 @@ with st.container():
         tiene_radicado = st.checkbox("Número de radicado o reclamo previo ante la EPS", value=False)
         tiene_documento_id = st.checkbox("Copia de documento de identidad del paciente y peticionario", value=False)
 
-# -----------------------------------------------------------------------------
-# PROCESAMIENTO Y GENERACIÓN DEL DOCUMENTO
-# -----------------------------------------------------------------------------
+# Procesamiento y generación
 st.write("")
 col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
 with col_btn2:
@@ -291,12 +477,10 @@ if generar_btn and not es_urgencia:
     relato_final = relato_hechos.strip() if relato_hechos.strip() else "He acudido ante la entidad a solicitar el servicio prescrito sin que a la fecha se haya garantizado oportunamente."
 
     with st.spinner("Consultando el corpus normativo colombiano y estructurando la reclamación..."):
-        # 1. Búsqueda RAG sobre el corpus normativo
         consulta_rag = f"{tipo_barrera} {servicio_final} {relato_final}"
         documentos_recuperados = rag.search(consulta_rag, top_k=3)
         contexto_rag = rag.get_formatted_context(consulta_rag, top_k=3)
 
-        # 2. Generación del borrador formal
         borrador_texto = f"""Señores:
 {eps_nombre.upper()}
 Atención: Oficina de Peticiones, Quejas, Reclamos y Solicitudes (PQRS) / Gerencia de Servicio al Cliente
@@ -365,7 +549,6 @@ Verifique los datos entre corchetes antes de radicar. No constituye asesoría le
 ================================================================================
 """
 
-        # Guardar en estado de sesión
         st.session_state["borrador_generado"] = borrador_texto
         st.session_state["documentos_recuperados"] = documentos_recuperados
         st.session_state["contexto_rag"] = contexto_rag
@@ -379,9 +562,7 @@ Verifique los datos entre corchetes antes de radicar. No constituye asesoría le
             "fecha": fecha_orden
         }
 
-# -----------------------------------------------------------------------------
-# VISUALIZACIÓN DE RESULTADOS
-# -----------------------------------------------------------------------------
+# Visualización de resultados
 if "borrador_generado" in st.session_state and not es_urgencia:
     st.success("✅ Reclamación jurídica estructurada y fundamentada exitosamente.")
     
@@ -407,17 +588,20 @@ if "borrador_generado" in st.session_state and not es_urgencia:
                 use_container_width=True
             )
         with col_d2:
-            try:
-                pdf_bytes = generate_petition_pdf(st.session_state["borrador_generado"])
-                st.download_button(
-                    label="📄 Descargar en PDF Formal",
-                    data=pdf_bytes,
-                    file_name=f"derecho_peticion_{eps_nombre.replace(' ', '_').lower()}.pdf",
-                    mime="application/pdf",
-                    use_container_width=True
-                )
-            except Exception as e:
-                st.caption(f"Descarga en TXT disponible (PDF: {e})")
+            if FPDF_INSTALADO:
+                try:
+                    pdf_bytes = generar_pdf_derecho_peticion(st.session_state["borrador_generado"])
+                    st.download_button(
+                        label="📄 Descargar en PDF Formal",
+                        data=pdf_bytes,
+                        file_name=f"derecho_peticion_{eps_nombre.replace(' ', '_').lower()}.pdf",
+                        mime="application/pdf",
+                        use_container_width=True
+                    )
+                except Exception as e:
+                    st.caption(f"Error generando PDF: {e}")
+            else:
+                st.caption("ℹ️ PDF disponible cuando subas el archivo requirements.txt actualizado a GitHub.")
 
         with col_d3:
             st.info("💡 **Consejo de radicación:** Radica este documento a través del portal de PQRD de tu EPS o en ventanilla física, exigiendo copia sellada con fecha y número de radicado.")
@@ -471,9 +655,6 @@ if "borrador_generado" in st.session_state and not es_urgencia:
                 "- **Apoyo gratuito:** Puedes acudir a la **Personería Municipal**, a la **Defensoría del Pueblo** o al Consultorio Jurídico de la Pontificia Universidad Javeriana para que te ayuden a redactarla sin costo."
             )
 
-# -----------------------------------------------------------------------------
-# PIE DE PÁGINA
-# -----------------------------------------------------------------------------
 st.divider()
 st.caption(
     "⚖️ **ReclamaSalud** · Pontificia Universidad Javeriana · Facultad de Ciencias Jurídicas · 2026-II · "
