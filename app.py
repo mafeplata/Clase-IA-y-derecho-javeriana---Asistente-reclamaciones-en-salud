@@ -91,58 +91,66 @@ except Exception:
 DIRECTORIO_EPS = {
     "EPS Sanitas": {
         "nombre_completo": "Entidad Promotora de Salud Sanitas S.A.S.",
-        "portal_pqrs": "https://www.epssanitas.com/usuarios/web/nuevo-portal-eps/pqrs",
+        "portal_web": "https://www.epssanitas.com",
+        "portal_pqrs": "https://www.epssanitas.com",
         "telefono_nacional": "01 8000 919 100",
         "telefono_bogota": "(601) 375 9000",
-        "consejo_radicacion": "Radica por el portal web oficial en 'Radicar PQRS' o de forma presencial en tu centro de atención, exigiendo copia sellada con fecha y número de radicado."
+        "consejo_radicacion": "Ingresa al portal web oficial de EPS Sanitas con tu tipo y número de documento en la sección 'Oficina Virtual' para radicar en línea, o acude presencialmente a tu centro de atención exigiendo copia sellada con fecha y número de radicado."
     },
     "Nueva EPS": {
         "nombre_completo": "Nueva EPS S.A.",
-        "portal_pqrs": "https://www.nuevaeps.com.co/canales-atencion/pqrd",
+        "portal_web": "https://www.nuevaeps.com.co",
+        "portal_pqrs": "https://www.nuevaeps.com.co",
         "telefono_nacional": "01 8000 954 400 (Contributivo) / 01 8000 952 000 (Subsidiado)",
         "telefono_bogota": "(601) 307 7022",
-        "consejo_radicacion": "Ingresa al portal de PQRD de Nueva EPS o radica por escrito en la Oficina de Atención al Afiliado más cercana."
+        "consejo_radicacion": "Ingresa al portal web oficial de Nueva EPS e inicia sesión en 'Oficina Virtual' para tramitar tu solicitud, o radica por escrito en la Oficina de Atención al Afiliado más cercana."
     },
     "Sura EPS": {
         "nombre_completo": "EPS y Medicina Prepagada Suramericana S.A.",
-        "portal_pqrs": "https://www.epssura.com/servicios-en-linea/pqrs",
+        "portal_web": "https://www.epssura.com",
+        "portal_pqrs": "https://www.epssura.com",
         "telefono_nacional": "01 8000 519 519",
         "telefono_bogota": "(601) 489 7941",
-        "consejo_radicacion": "Radica a través de 'Radicar Solicitudes y Reclamos' en www.epssura.com o por su línea telefónica nacional."
+        "consejo_radicacion": "Accede a www.epssura.com e inicia sesión en 'Servicios en Línea' con tu usuario para radicar y hacer seguimiento a tu reclamo, o llama a su línea nacional de atención."
     },
     "Salud Total EPS": {
         "nombre_completo": "Salud Total EPS del Régimen Contributivo S.A.",
-        "portal_pqrs": "https://saludtotal.com.co/peticiones-quejas-y-reclamos/",
+        "portal_web": "https://saludtotal.com.co",
+        "portal_pqrs": "https://saludtotal.com.co",
         "telefono_nacional": "01 8000 1 14524",
         "telefono_bogota": "(601) 485 4555",
-        "consejo_radicacion": "Utiliza el formulario PQRD en saludtotal.com.co para recibir un radicado virtual inmediato con seguimiento en tiempo real."
+        "consejo_radicacion": "Ingresa a saludtotal.com.co e identifícate en el 'Punto de Atención al Usuario (PAU) Virtual' con tu cédula y contraseña para registrar tu PQRD con constancia inmediata."
     },
     "Famisanar EPS": {
         "nombre_completo": "EPS Famisanar SAS",
-        "portal_pqrs": "https://www.famisanar.com.co/canales-de-atencion/pqrd/",
+        "portal_web": "https://www.famisanar.com.co",
+        "portal_pqrs": "https://www.famisanar.com.co",
         "telefono_nacional": "01 8000 116 662 (Contributivo) / 01 8000 914 202 (Subsidiado)",
         "telefono_bogota": "(601) 307 8069",
-        "consejo_radicacion": "Radica por el formulario PQRD de Famisanar o presencialmente en los Centros de Atención al Usuario (CAU)."
+        "consejo_radicacion": "Ingresa al portal oficial de Famisanar en 'Oficina Virtual' para radicar en línea, o acude a los Centros de Atención al Usuario (CAU) con copia física del documento."
     },
     "Compensar EPS": {
         "nombre_completo": "Compensar Entidad Promotora de Salud",
-        "portal_pqrs": "https://www.compensar.com/salud/pqrs",
+        "portal_web": "https://www.compensar.com",
+        "portal_pqrs": "https://www.compensar.com",
         "telefono_nacional": "01 8000 915 202",
         "telefono_bogota": "(601) 444 1234",
-        "consejo_radicacion": "Radica en el formulario digital en compensar.com/salud o en la sede ambulatoria donde consultas habitualmente."
+        "consejo_radicacion": "Ingresa a compensar.com en el módulo de Salud y accede con tus credenciales a 'Transacciones en Línea' para registrar tu queja o reclamo."
     },
     "Savia Salud EPS": {
         "nombre_completo": "Alianza Medellín Antioquia EPS S.A.S. - Savia Salud",
-        "portal_pqrs": "https://www.saviasaludeps.com/servicios-en-linea/pqrd",
+        "portal_web": "https://www.saviasaludeps.com",
+        "portal_pqrs": "https://www.saviasaludeps.com",
         "telefono_nacional": "01 8000 423 683",
         "telefono_bogota": "Línea Medellín: (604) 448 1747",
-        "consejo_radicacion": "Radica mediante el formulario PQRD en www.saviasaludeps.com o en los puntos de atención municipal."
+        "consejo_radicacion": "Ingresa a saviasaludeps.com en la sección 'Atención al Ciudadano' o radica en la oficina de atención municipal más cercana."
     }
 }
 
 CANAL_SUPERSALUD = {
     "entidad": "Superintendencia Nacional de Salud (Supersalud)",
-    "portal_pqrs": "https://www.supersalud.gov.co/es-co/Paginas/Protecci%C3%B3n%20al%20Usuario/atencion-al-ciudadano.html",
+    "portal_web": "https://www.supersalud.gov.co",
+    "portal_pqrs": "https://www.supersalud.gov.co",
     "linea_gratuita_nacional": "01 8000 513 700",
     "telefono_bogota": "(601) 744 2000"
 }
@@ -153,6 +161,7 @@ def get_eps_info(nombre_eps: str) -> dict:
             return data
     return {
         "nombre_completo": nombre_eps,
+        "portal_web": "https://www.supersalud.gov.co",
         "portal_pqrs": "https://www.supersalud.gov.co",
         "telefono_nacional": "Línea de atención de la entidad",
         "telefono_bogota": "Consultar en la página oficial",
@@ -381,15 +390,17 @@ with st.container():
 
     # Directorio de radicación de la EPS seleccionada
     info_eps = get_eps_info(eps_nombre)
-    with st.expander(f"📮 Canales oficiales de radicación de {eps_nombre}", expanded=False):
-        c_eps1, c_eps2 = st.columns([2, 1])
+    with st.expander(f"📮 Canales oficiales de radicación y contacto ({eps_nombre})", expanded=False):
+        c_eps1, c_eps2 = st.columns([3, 2])
         with c_eps1:
             st.markdown(f"**Entidad:** {info_eps['nombre_completo']}")
-            st.markdown(f"📞 **Línea nacional:** `{info_eps['telefono_nacional']}`  \n📍 **Línea local:** `{info_eps['telefono_bogota']}`")
-            st.caption(f"💡 **Consejo:** {info_eps['consejo_radicacion']}")
+            st.markdown(f"📞 **Línea gratuita nacional:** `{info_eps['telefono_nacional']}`  \n📍 **Línea Bogotá/Local:** `{info_eps['telefono_bogota']}`")
+            st.caption(f"💡 **Consejo de radicación:** {info_eps['consejo_radicacion']}")
         with c_eps2:
-            if info_eps.get("portal_pqrs") and info_eps["portal_pqrs"].startswith("http"):
-                st.link_button("🌐 Abrir Portal PQRD de la EPS", info_eps["portal_pqrs"], use_container_width=True)
+            url_eps = info_eps.get("portal_web") or info_eps.get("portal_pqrs", "https://www.supersalud.gov.co")
+            st.link_button(f"🌐 Portal Oficial de {eps_nombre}", url_eps, use_container_width=True)
+            st.link_button("🏛️ Radicar en Supersalud", CANAL_SUPERSALUD["portal_pqrs"], use_container_width=True)
+            st.caption("ℹ️ *Nota:* Para radicar por internet, la mayoría de EPS solicitan ingresar con tu usuario o cédula en su oficina virtual. Si la web de la EPS presenta errores, puedes radicar directamente en la Superintendencia de Salud.")
 
     st.divider()
 
