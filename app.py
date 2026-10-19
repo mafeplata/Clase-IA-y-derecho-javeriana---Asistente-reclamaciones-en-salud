@@ -284,6 +284,325 @@ def calcular_terminos_legales(fecha_solicitud, tipo_barrera):
     return dias_calendario, dias_habiles, estado, mensaje
 
 # -----------------------------------------------------------------------------
+# 5. SISTEMA DE ACCESIBILIDAD UNIVERSAL Y ASISTENCIA POR VOZ (WCAG 2.1)
+# -----------------------------------------------------------------------------
+def render_audio_player(texto_a_leer: str, titulo: str = "Escuchar en voz alta", velocidad: float = 1.0, key: str = "tts_1"):
+    """Genera un reproductor accesible de lectura por voz nativa (Text-to-Speech) sin librerías externas."""
+    texto_seguro = (
+        texto_a_leer.replace("\\", "\\\\")
+        .replace("`", "\\`")
+        .replace('"', '\\"')
+        .replace("'", "\\'")
+        .replace("\n", " ")
+        .replace("\r", " ")
+    )
+    if len(texto_seguro) > 3500:
+        texto_seguro = texto_seguro[:3500] + "..."
+
+    html_code = f"""
+    <div style="margin: 6px 0; display: inline-flex; gap: 8px; align-items: center; font-family: sans-serif;">
+      <button id="btn_speak_{key}" onclick="speak_{key}()" style="
+        background: #004b87; color: white; border: none; padding: 6px 14px;
+        border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer;
+        display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      ">
+        🔊 {titulo}
+      </button>
+      <button id="btn_stop_{key}" onclick="stop_{key}()" style="
+        background: #6c757d; color: white; border: none; padding: 6px 12px;
+        border-radius: 6px; font-weight: 500; font-size: 13px; cursor: pointer;
+      ">
+        ⏹️ Detener
+      </button>
+      <span id="status_{key}" style="font-size: 12px; color: #555;"></span>
+    </div>
+    <script>
+      function speak_{key}() {{
+        if (!('speechSynthesis' in window)) {{
+          document.getElementById('status_{key}').innerText = 'Navegador sin soporte de voz.';
+          return;
+        }}
+        window.speechSynthesis.cancel();
+        const texto = `{texto_seguro}`;
+        const utterance = new SpeechSynthesisUtterance(texto);
+        utterance.lang = 'es-CO';
+        utterance.rate = {velocidad};
+        
+        utterance.onstart = function() {{
+          document.getElementById('status_{key}').innerText = '▶️ Reproduciendo voz...';
+        }};
+        utterance.onend = function() {{
+          document.getElementById('status_{key}').innerText = '✅ Listo';
+        }};
+        utterance.onerror = function(e) {{
+          document.getElementById('status_{key}').innerText = '⚠️ Audio detenido';
+        }};
+        
+        window.speechSynthesis.speak(utterance);
+      }}
+      function stop_{key}() {{
+        if ('speechSynthesis' in window) {{
+          window.speechSynthesis.cancel();
+          document.getElementById('status_{key}').innerText = '⏹️ Detenido';
+        }}
+      }}
+    </script>
+    """
+    st.components.v1.html(html_code, height=45)
+
+
+def render_dictado_por_voz():
+    """Widget de dictado por voz mediante Web Speech Recognition con instrucciones accesibles."""
+    html_code = """
+    <div style="
+      border: 2px dashed #004b87; border-radius: 8px; padding: 12px;
+      background: rgba(0, 75, 135, 0.04); margin-bottom: 12px; font-family: sans-serif;
+    ">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+        <span style="font-weight: 600; font-size: 14px; color: #004b87;">
+          🎙️ Dictado por Voz (Habla al micrófono para narrar tu caso)
+        </span>
+        <button id="btn_dictar" onclick="alternarDictado()" style="
+          background: #e63946; color: white; border: none; padding: 6px 14px;
+          border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer;
+          display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(230,57,70,0.3);
+        ">
+          🎤 Iniciar Dictado
+        </button>
+      </div>
+      <p id="stt_estado" style="font-size: 12px; color: #555; margin: 4px 0;">
+        Haz clic en "Iniciar Dictado" y describe lo que te ocurrió con la EPS. Tu voz se transcribirá en tiempo real.
+      </p>
+      <div id="stt_resultado" style="
+        min-height: 48px; max-height: 100px; overflow-y: auto; background: white;
+        border: 1px solid #ccc; border-radius: 6px; padding: 8px; font-size: 13px;
+        color: #222; margin-top: 6px;
+      "><em>El texto que vayas dictando aparecerá aquí...</em></div>
+      <div style="margin-top: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+        <button id="btn_copiar" onclick="copiarDictado()" style="
+          background: #004b87; color: white; border: none; padding: 5px 12px;
+          border-radius: 4px; font-size: 12px; font-weight: 500; cursor: pointer;
+        ">
+          📋 Copiar texto dictado
+        </button>
+        <span id="stt_aviso_copia" style="font-size: 12px; color: #2a9d8f; font-weight: bold;"></span>
+      </div>
+      <div style="margin-top: 6px; font-size: 11px; color: #666; line-height: 1.3;">
+        💡 <b>Atajo directo en teclado:</b> También puedes hacer clic dentro del cuadro de texto de abajo y presionar la tecla <b>Windows + H</b> (en Windows) o el ícono de micrófono de tu celular para dictar directamente.
+      </div>
+    </div>
+
+    <script>
+      let recognition = null;
+      let grabando = false;
+      let transcripcionCompleta = "";
+
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      function alternarDictado() {
+        if (!SpeechRec) {
+          document.getElementById('stt_estado').innerHTML = '⚠️ Tu navegador no soporta reconocimiento de voz nativo en este contenedor. Te recomendamos usar Google Chrome o presionar la tecla <b>Windows + H</b> en tu teclado.';
+          return;
+        }
+
+        const btn = document.getElementById('btn_dictar');
+        const estado = document.getElementById('stt_estado');
+
+        if (!grabando) {
+          recognition = new SpeechRec();
+          recognition.lang = 'es-CO';
+          recognition.continuous = true;
+          recognition.interimResults = true;
+
+          recognition.onstart = function() {
+            grabando = true;
+            btn.innerHTML = '🛑 Detener Dictado';
+            btn.style.background = '#2a9d8f';
+            estado.innerHTML = '🔴 <b>Escuchando micrófono...</b> Habla narrando tu situación con la EPS.';
+          };
+
+          recognition.onresult = function(event) {
+            let intermedio = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+              if (event.results[i].isFinal) {
+                transcripcionCompleta += event.results[i][0].transcript + ' ';
+              } else {
+                intermedio += event.results[i][0].transcript;
+              }
+            }
+            document.getElementById('stt_resultado').innerText = transcripcionCompleta + intermedio;
+          };
+
+          recognition.onerror = function(event) {
+            estado.innerText = '⚠️ Estado del micrófono: ' + event.error + '. Recuerda autorizar el permiso de micrófono en tu navegador.';
+            detenerGrabacion();
+          };
+
+          recognition.onend = function() {
+            detenerGrabacion();
+          };
+
+          try {
+            recognition.start();
+          } catch(e) {
+            estado.innerText = 'Error al iniciar micrófono: ' + e.message;
+          }
+        } else {
+          if (recognition) {
+            recognition.stop();
+          }
+          detenerGrabacion();
+        }
+      }
+
+      function detenerGrabacion() {
+        grabando = false;
+        const btn = document.getElementById('btn_dictar');
+        if (btn) {
+          btn.innerHTML = '🎤 Iniciar Dictado';
+          btn.style.background = '#e63946';
+        }
+        const estado = document.getElementById('stt_estado');
+        if (estado) {
+          estado.innerHTML = '⏹️ Dictado detenido. Presiona <b>Copiar texto</b> y pégalo abajo.';
+        }
+      }
+
+      function copiarDictado() {
+        const texto = document.getElementById('stt_resultado').innerText;
+        if (!texto || texto.trim().length === 0 || texto.includes('El texto que vayas dictando')) {
+          alert('Primero debes dictar algo para poder copiarlo.');
+          return;
+        }
+        navigator.clipboard.writeText(texto).then(() => {
+          const aviso = document.getElementById('stt_aviso_copia');
+          aviso.innerText = '✅ ¡Copiado al portapapeles! Pégalo con Ctrl+V en el cuadro de abajo.';
+          setTimeout(() => { aviso.innerText = ''; }, 4500);
+        }).catch(err => {
+          alert('Selecciona y copia el texto manualmente.');
+        });
+      }
+    </script>
+    """
+    st.components.v1.html(html_code, height=210)
+
+
+def render_semaforo_accesible(est_semaforo, msg_semaforo, daltonismo_filtro, vel_voz):
+    """Renderiza el semáforo con soporte daltónico (patrones, bordes, símbolos no cromáticos) y botón de audio."""
+    if est_semaforo == "verde":
+        badge_simbolo = "🟢 [ESTADO NORMAL: DENTRO DEL TÉRMINO LEGAL]"
+        icono_dalt = "✔ CÍRCULO / PLAZO VIGENTE"
+        if "Deuteranopía" in daltonismo_filtro or "Protanopía" in daltonismo_filtro:
+            borde_estilo = "border: 3px solid #0072B2; background-color: #EDF7FF; color: #003666;"
+        else:
+            borde_estilo = "border-left: 8px solid #28a745; background-color: rgba(40, 167, 69, 0.12);"
+    elif est_semaforo == "amarillo":
+        badge_simbolo = "🟡 [ALERTA PREVENTIVA: TÉRMINO PRÓXIMO A VENCER O EN MORA INICIAL]"
+        icono_dalt = "▲ TRIÁNGULO / ADVERTENCIA"
+        if "Deuteranopía" in daltonismo_filtro or "Protanopía" in daltonismo_filtro:
+            borde_estilo = "border: 3px dashed #E69F00; background-color: #FFF8E7; color: #734B00;"
+        else:
+            borde_estilo = "border-left: 8px dashed #ffc107; background-color: rgba(255, 193, 7, 0.16);"
+    else:
+        badge_simbolo = "🔴 [ALERTA LEGAL MÁXIMA: TÉRMINO VENCIDO / MORA INJUSTIFICADA]"
+        icono_dalt = "✖ CUADRADO / MORA GRAVE"
+        if "Deuteranopía" in daltonismo_filtro or "Protanopía" in daltonismo_filtro:
+            borde_estilo = "border: 4px double #D55E00; background-color: #FFECE6; color: #661800;"
+        else:
+            borde_estilo = "border-left: 8px double #dc3545; background-color: rgba(220, 53, 69, 0.16);"
+
+    st.markdown(
+        f"""
+        <div style="{borde_estilo} padding: 12px 16px; border-radius: 8px; margin: 10px 0;">
+            <div style="font-weight: bold; font-size: 14px; margin-bottom: 6px;">
+                {badge_simbolo}
+                <span style="font-size: 12px; font-weight: normal; margin-left: 8px; opacity: 0.85;">
+                    (Guía visual accesible: {icono_dalt})
+                </span>
+            </div>
+            <div style="font-size: 13.5px; line-height: 1.45;">
+                {msg_semaforo}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    render_audio_player(
+        texto_a_leer=f"Dictamen del semáforo legal. {msg_semaforo}",
+        titulo="Escuchar dictamen del semáforo",
+        velocidad=vel_voz,
+        key="tts_semaforo"
+    )
+
+
+def inyectar_css_accesibilidad(bg_col, text_col, card_col, btn_col, tam_fuente, interlineado, fuente_css, es_alto_contraste=False, daltonismo_filtro="Sin filtro adicional"):
+    """Inyecta reglas CSS dinámicas respetando las Pautas WCAG 2.1 y la personalización de cada usuario."""
+    css = f"""
+    <style>
+    /* Tipografía, tamaño y espaciado global accesible */
+    html, body, [class*="css"], .stMarkdown, .stText, p, span, label {{
+        font-size: {tam_fuente}px !important;
+        line-height: {interlineado} !important;
+        font-family: {fuente_css} !important;
+    }}
+    
+    /* Fondo principal y textos */
+    .stApp {{
+        background-color: {bg_col} !important;
+        color: {text_col} !important;
+    }}
+    
+    h1, h2, h3, h4, h5, h6 {{
+        color: {text_col} !important;
+        font-family: {fuente_css} !important;
+    }}
+    
+    /* Cajas de texto y selectores */
+    textarea, input[type="text"] {{
+        font-size: {tam_fuente}px !important;
+        line-height: {interlineado} !important;
+        font-family: {fuente_css} !important;
+    }}
+    
+    /* Botones primarios */
+    button[kind="primary"] {{
+        background-color: {btn_col} !important;
+        border-color: {btn_col} !important;
+    }}
+    """
+    
+    if es_alto_contraste:
+        css += """
+        /* Modo Alto Contraste Oscuro WCAG AAA */
+        .stMarkdown p, .stMarkdown span, label, .stCaption, [data-testid="stSidebar"] * {
+            color: #FFE600 !important;
+        }
+        textarea, input[type="text"], .stSelectbox > div > div {
+            background-color: #000000 !important;
+            color: #FFE600 !important;
+            border: 2px solid #FFE600 !important;
+        }
+        [data-testid="stExpander"] {
+            background-color: #1A1A1A !important;
+            border: 1px solid #FFE600 !important;
+        }
+        .stTabs [data-baseweb="tab"] {
+            color: #FFE600 !important;
+        }
+        """
+
+    if "Monocromático" in daltonismo_filtro:
+        css += """
+        /* Filtro monocromático para daltonismo total / acromatopsia */
+        .stApp {
+            filter: grayscale(100%) contrast(110%) !important;
+        }
+        """
+
+    css += "\n</style>"
+    st.markdown(css, unsafe_allow_html=True)
+
+# -----------------------------------------------------------------------------
 # CONFIGURACIÓN E INTERFAZ STREAMLIT
 # -----------------------------------------------------------------------------
 st.set_page_config(
@@ -350,6 +669,126 @@ with st.sidebar:
             "- Circular 2023151000000010-5 (Supersalud)\n"
             "- Sentencia T-760 de 2008 (Corte Const.)"
         )
+
+    st.divider()
+    st.markdown("### 🎨 Personalización y Accesibilidad")
+    st.caption("Pautas WCAG 2.1 · Res. MinTIC 1519/2020 · Ley 1751/15")
+    
+    with st.expander("🛠️ Personalizar interfaz, colores y voz", expanded=False):
+        modo_apariencia = st.selectbox(
+            "Tema visual de la página:",
+            [
+                "🌟 Estándar Javeriana",
+                "🌙 Alto Contraste Oscuro (WCAG AAA)",
+                "📜 Modo Sepia (Lectura Descansada)",
+                "👁️ Modo Daltonismo Universal",
+                "🎨 ¡100% Personalizado a mi gusto!"
+            ],
+            index=0,
+            help="Selecciona un tema o diseña tu propia paleta personalizada."
+        )
+
+        es_alto_contraste = False
+        if modo_apariencia == "🎨 ¡100% Personalizado a mi gusto!":
+            st.markdown("**Personaliza tus propios colores:**")
+            color_fondo = st.color_picker("Color de fondo de página:", value="#FFFFFF")
+            color_texto = st.color_picker("Color de los textos:", value="#1A1A1A")
+            color_tarjeta = st.color_picker("Color de recuadros y tarjetas:", value="#F4F6F9")
+            color_primario = st.color_picker("Color de botones principales:", value="#004B87")
+        elif modo_apariencia == "🌙 Alto Contraste Oscuro (WCAG AAA)":
+            color_fondo = "#121212"
+            color_texto = "#FFE600"
+            color_tarjeta = "#1E1E1E"
+            color_primario = "#FFE600"
+            es_alto_contraste = True
+        elif modo_apariencia == "📜 Modo Sepia (Lectura Descansada)":
+            color_fondo = "#FBF0D9"
+            color_texto = "#2B2B2B"
+            color_tarjeta = "#F4E7C5"
+            color_primario = "#7D4E24"
+        elif modo_apariencia == "👁️ Modo Daltonismo Universal":
+            color_fondo = "#F9F9FB"
+            color_texto = "#101010"
+            color_tarjeta = "#EAECEF"
+            color_primario = "#0055A5"
+        else:
+            color_fondo = "#FFFFFF"
+            color_texto = "#1A1A1A"
+            color_tarjeta = "#F8F9FA"
+            color_primario = "#004B87"
+
+        st.markdown("---")
+        tam_fuente = st.slider(
+            "Tamaño de letra (px):",
+            min_value=14,
+            max_value=26,
+            value=16,
+            step=1,
+            help="14px compacto, 16px normal, 20px grande, 24px adulto mayor"
+        )
+
+        interlineado_opc = st.select_slider(
+            "Interlineado de lectura:",
+            options=["Compacto (1.3x)", "Estándar (1.6x)", "Amplio / Dislexia (1.9x)", "Máximo (2.2x)"],
+            value="Estándar (1.6x)"
+        )
+        line_height_map = {
+            "Compacto (1.3x)": "1.3",
+            "Estándar (1.6x)": "1.6",
+            "Amplio / Dislexia (1.9x)": "1.9",
+            "Máximo (2.2x)": "2.2"
+        }
+        interlineado_css = line_height_map[interlineado_opc]
+
+        fuente_opc = st.selectbox(
+            "Tipo de letra (Tipografía):",
+            [
+                "Sans-Serif (Moderna y limpia)",
+                "Serif (Clásica estilo código judicial)",
+                "Lectura Fácil / Dislexia (Segoe UI / Comic)",
+                "Monospace (Espacio fijo técnico)"
+            ]
+        )
+        font_map = {
+            "Sans-Serif (Moderna y limpia)": "system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+            "Serif (Clásica estilo código judicial)": "Georgia, 'Times New Roman', Cambria, serif",
+            "Lectura Fácil / Dislexia (Segoe UI / Comic)": "'Comic Sans MS', 'OpenDyslexic', 'Segoe UI', sans-serif",
+            "Monospace (Espacio fijo técnico)": "'Courier New', Courier, monospace"
+        }
+        fuente_css = font_map[fuente_opc]
+
+        daltonismo_filtro = st.selectbox(
+            "Filtro visual para Daltonismo:",
+            [
+                "Sin filtro adicional",
+                "Deuteranopía (Dificultad con verdes)",
+                "Protanopía (Dificultad con rojos)",
+                "Tritanopía (Dificultad con azules)",
+                "Monocromático (Escala de grises)"
+            ]
+        )
+
+        vel_voz = st.slider(
+            "🔊 Velocidad de lectura en voz alta:",
+            min_value=0.7,
+            max_value=1.4,
+            value=1.0,
+            step=0.1,
+            help="0.7x es pausado (recomendado para adultos mayores); 1.0x es velocidad normal."
+        )
+
+    # Inyección de estilos de accesibilidad personalizados
+    inyectar_css_accesibilidad(
+        bg_col=color_fondo,
+        text_col=color_texto,
+        card_col=color_tarjeta,
+        btn_col=color_primario,
+        tam_fuente=tam_fuente,
+        interlineado=interlineado_css,
+        fuente_css=fuente_css,
+        es_alto_contraste=es_alto_contraste,
+        daltonismo_filtro=daltonismo_filtro
+    )
 
 # Encabezado principal
 col_logo, col_text = st.columns([1, 6])
@@ -436,6 +875,12 @@ with st.container():
             "2. **Fundamento legal de protección inmediata:** Conforme al **artículo 14 de la Ley Estatutaria 1751 de 2015**, **TODAS** las clínicas y hospitales de Colombia (públicas y privadas) están obligadas a prestar atención inicial de urgencias de forma obligatoria e inmediata, **sin exigir autorizaciones de la EPS, sin cita previa y sin cobro de copagos ni pagos anticipados**.\n\n"
             "*La vida y la salud inmediata son la prioridad absoluta.*"
         )
+        render_audio_player(
+            texto_a_leer="Alerta de emergencia médica vital. Detenga el trámite de este documento. Los síntomas descritos corresponden a una posible urgencia vital. Comuníquese de inmediato a la línea de emergencias 123 en Colombia o traslade al paciente a la sala de urgencias más cercana. El artículo 14 de la Ley Estatutaria de Salud obliga a todas las clínicas y hospitales a prestar atención obligatoria e inmediata sin autorizaciones ni copagos.",
+            titulo="Escuchar alerta de urgencia vital en voz alta",
+            velocidad=vel_voz,
+            key="tts_urgencia"
+        )
     else:
         col_f1, col_f2 = st.columns([1, 2])
         with col_f1:
@@ -443,22 +888,19 @@ with st.container():
             medico_tratante = st.text_input("Médico o especialidad que ordenó el servicio:", value="", placeholder="Ej. Dra. Martínez / Medicina Interna")
             servicio_solicitado = st.text_input("Nombre del medicamento, cita o examen solicitado:", value="", placeholder="Ej. Losartán 50mg / Cita con Neurología")
             
-            # Semáforo de Término Legal
+            # Semáforo de Término Legal Accesible (WCAG 2.1)
             d_cal, d_hab, est_semaforo, msg_semaforo = calcular_terminos_legales(fecha_orden, tipo_barrera)
             st.markdown("#### 🚦 Semáforo de Término Legal")
-            if est_semaforo == "verde":
-                st.success(msg_semaforo)
-            elif est_semaforo == "amarillo":
-                st.warning(msg_semaforo)
-            else:
-                st.error(msg_semaforo)
+            render_semaforo_accesible(est_semaforo, msg_semaforo, daltonismo_filtro, vel_voz)
 
         with col_f2:
+            st.markdown("#### 📝 Narración de los Hechos de tu Caso")
+            render_dictado_por_voz()
             relato_hechos = st.text_area(
-                "Describe cronológicamente lo sucedido (trámites realizados, respuestas de la EPS, tiempo de espera y consecuencias en la salud):",
+                "Describe cronológicamente lo sucedido (o dicta con el micrófono arriba):",
                 value="",
                 placeholder="Describe aquí qué ocurrió: qué fecha acudiste, qué respuesta te dieron en la farmacia o EPS, cuánto tiempo llevas esperando y cómo ha afectado tu salud...",
-                height=220
+                height=200
             )
 
     st.divider()
@@ -586,6 +1028,12 @@ if "borrador_generado" in st.session_state and not es_urgencia:
 
     with tab_doc:
         st.markdown("### Borrador Formal de Derecho de Petición ante la EPS")
+        render_audio_player(
+            texto_a_leer=st.session_state["borrador_generado"],
+            titulo="Escuchar Derecho de Petición completo",
+            velocidad=vel_voz,
+            key="tts_peticion"
+        )
         st.caption("Revisa el texto, completa los campos entre corchetes `[...]` y descarga tu documento en PDF o Texto.")
         st.text_area("Texto de la reclamación:", value=st.session_state["borrador_generado"], height=440)
         
@@ -636,6 +1084,12 @@ if "borrador_generado" in st.session_state and not es_urgencia:
 
     with tab_hoja_ruta:
         st.markdown("### 🗺️ Hoja de Ruta Post-Reclamación")
+        render_audio_player(
+            texto_a_leer="Hoja de ruta post reclamación. Paso 1: Radica el documento por el portal web oficial o en ventanilla física exigiendo sello de recibido con fecha, hora y número de radicado. Paso 2: Si la EPS responde favorablemente, acude por tu servicio. Paso 3A: Si la EPS no responde o niega el servicio, presenta queja formal ante la Superintendencia Nacional de Salud aportando copia de tu petición. Paso 3B: Si la falta de atención compromete tu salud o vida digna, puedes interponer una Acción de Tutela con apoyo gratuito de la Personería o la Defensoría del Pueblo.",
+            titulo="Escuchar Hoja de Ruta en voz alta",
+            velocidad=vel_voz,
+            key="tts_ruta"
+        )
         st.write("¿Qué pasos debes seguir una vez tengas tu derecho de petición listo?")
 
         col_p1, col_p2 = st.columns(2)
