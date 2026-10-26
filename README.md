@@ -64,8 +64,14 @@ Durante la etapa académica, las pruebas se realizarán con situaciones ficticia
 | Sugiere documentos que podrían anexarse a la reclamación. | No verifica la autenticidad o validez de los documentos. |
 | Informa sobre posibles pasos posteriores, como acudir a la Supersalud o buscar orientación profesional. | No elabora automáticamente demandas ni acciones de tutela. |
 | Muestra una alerta cuando el relato indica una posible urgencia. | No sustituye los servicios de urgencias, un médico o un abogado. |
-| Permite copiar o descargar el borrador generado. | No almacena historias clínicas ni datos sensibles en la versión académica. |
+| Permite copiar o descargar el borrador generado en formato de texto. | No almacena historias clínicas ni datos sensibles en la versión académica. |
 | Reconoce cuando el corpus no contiene información suficiente. | No responde jurídicamente asuntos que estén fuera de su corpus. |
+| **Semáforo interactivo de términos legales:** calcula la fecha límite legal de respuesta de la EPS (diferenciando días hábiles vs. calendario según Ley 1755, Res. 229 y Circ. Externa 2023151000000010-5) y diagnostica el estado del plazo con alertas visuales accesibles (`✔`, `▲`, `✖`). | No computa festivos locales ni suspensiones extraordinarias de términos judiciales no reglamentadas. |
+| **Directorio oficial de radicación de EPS:** enlaza directamente a los portales web oficiales de PQRD y ofrece el canal central garantizado de la Superintendencia Nacional de Salud. | No radica directamente la reclamación ni gestiona contraseñas del usuario ante la EPS. |
+| **Exportación en PDF judicial formal:** genera un documento PDF descargable con formato forense, márgenes estandarizados y membrete institucional listo para imprimir o radicar vía `fpdf2`. | No firma digitalmente el documento en nombre del usuario. |
+| **Hoja de ruta post-reclamación:** guía al ciudadano en la custodia de pruebas, la queja administrativa ante Supersalud y los requisitos para acudir a la Personería/Defensoría para una Acción de Tutela. | No redacta automáticamente la demanda de tutela ni asume la representación judicial. |
+| **Accesibilidad universal (WCAG 2.1 Niveles AA y AAA):** ofrece personalización visual completa (Estándar Javeriana de alto contraste azul y oro, modo claro reforzado, alto contraste oscuro, sepia, filtro para daltonismo y paleta libre), con control dinámico de tamaño de fuente e interlineado. | No sustituye software lector de pantalla especializado de grado médico o industrial. |
+| **Asistencia por voz:** lectura en voz alta accesible mediante reproductor nativo de audio MP3 (para alertas de triaje, diagnóstico de plazos y texto de la petición) y orientación para dictado por voz por teclado. | No graba ni almacena archivos de audio del usuario en servidores externos. |
 
 **Advertencia obligatoria:**
 
@@ -106,12 +112,22 @@ Si el corpus no contiene información suficiente para responder un caso, la herr
   [Consultar en el Ministerio de Salud](https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/DE/DIJ/resolucion-229-de-2020.pdf)
 
 - [x] **Circular Externa 2023151000000010-5 de 2023 — Superintendencia Nacional de Salud.**  
-  Contiene instrucciones sobre la recepción y gestión de peticiones, quejas y reclamos en salud. También clasifica los reclamos según su riesgo y establece términos diferenciados para su gestión.  
+  Contiene instrucciones sobre la recepción y gestión de peticiones, quejas y reclamos en salud. Clasifica los reclamos según su nivel de riesgo y establece términos diferenciados para su gestión, fundamento directo del **Semáforo interactivo de términos legales** de la aplicación (riesgo vital: 24 horas; riesgo priorizado: 48 horas; solicitudes generales: 15 días hábiles).  
   [Consultar en la Superintendencia Nacional de Salud](https://docs.supersalud.gov.co/PortalWeb/Juridica/CircularesExterna/Circular%20Externa%20No.%202023151000000010-5%20de%202023.pdf)
 
 - [x] **Sentencia T-760 de 2008 — Corte Constitucional.**  
   Reúne reglas importantes sobre el acceso efectivo a los servicios de salud, las barreras administrativas, la continuidad y la obligación de prestar los servicios de manera oportuna, eficiente y con calidad.  
   [Consultar en la Corte Constitucional](https://www.corteconstitucional.gov.co/relatoria/2008/t-760-08.htm)
+
+#### Marco normativo de accesibilidad y enfoque diferencial
+
+- [x] **Resolución MinTIC 1519 de 2020 — Directrices de accesibilidad web para Colombia.**  
+  Adopta los estándares internacionales de las Pautas de Accesibilidad para el Contenido Web (**WCAG 2.1**) del W3C (niveles AA y AAA). Fundamenta los temas visuales de alto contraste (Azul/Oro Javeriana, Negro/Amarillo), los modos de daltonismo, los controles tipográficos dinámicos y la asistencia por voz para garantizar el acceso sin barreras a la justicia digital.  
+  [Consultar en Función Pública](https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=144360)
+
+- [x] **Ley Estatutaria 1751 de 2015 (Art. 6, literales j y k) — Principios de accesibilidad y enfoque diferencial.**  
+  Dispone que el Estado debe garantizar que los servicios e información sobre el derecho a la salud sean físicamente y digitalmente accesibles para todos, especialmente para sujetos de especial protección constitucional (adultos mayores, personas con discapacidad o en situación de vulnerabilidad).  
+  [Consultar en el Ministerio de Salud](https://minsalud.gov.co/Normatividad_Nuevo/Ley%201751%20de%202015.pdf)
 
 #### Fuentes complementarias
 
@@ -206,14 +222,20 @@ Marca cada hito cuando lo termines. Los hitos siguen las sesiones del curso.
 
 #### M4 — Interfaz y despliegue
 
-- [x] Crear el formulario de entrevista.
-- [x] Mostrar un resumen de los hechos.
-- [x] Generar el borrador de reclamación.
-- [x] Permitir copiar o descargar el documento.
-- [x] Mostrar las fuentes jurídicas utilizadas.
-- [x] Mostrar la advertencia obligatoria.
-- [x] Evitar el almacenamiento de datos sensibles.
-- [x] Publicar la herramienta en una URL accesible.
+- [x] Crear el formulario de entrevista guiada.
+- [x] Mostrar un resumen estructurado de los hechos y pretensiones.
+- [x] Generar el borrador de reclamación con RAG y citas normativas.
+- [x] Implementar el **Semáforo interactivo de términos legales** (cálculo de días hábiles vs. calendario, diagnósticos de vencimiento y simbología visual accesible).
+- [x] Construir el **Directorio oficial de radicación de EPS** y canal centralizado de la Superintendencia Nacional de Salud.
+- [x] Integrar exportador de petición en **PDF judicial formal** con diseño forense (`fpdf2`).
+- [x] Desarrollar la **Hoja de ruta post-reclamación** (custodia probatoria, queja administrativa Supersalud y orientación para tutela).
+- [x] Implementar el panel de **Accesibilidad Universal (WCAG 2.1 AA/AAA)** con selector de temas de alto contraste (Estándar Javeriana Azul/Oro, Modo Claro Reforzado, Alto Contraste Oscuro, Modo Sepia, Filtro para Daltonismo y Paleta 100% Personalizada libre), control de tamaño de fuente (14px–26px) e interlineado adaptable.
+- [x] Integrar **Asistencia por voz**: reproductor nativo de audio MP3 (TTS en español colombiano con `gTTS`) para escuchar alertas, diagnósticos de términos y la petición completa, junto con orientación para dictado por voz (STT).
+- [x] Permitir copiar o descargar el documento en formato TXT y PDF.
+- [x] Mostrar las fuentes jurídicas utilizadas y citas del corpus.
+- [x] Mostrar la advertencia obligatoria y el protocolo ético de triage ante urgencias médicas.
+- [x] Evitar el almacenamiento de datos sensibles o historias clínicas.
+- [x] Publicar la herramienta en una URL accesible de Streamlit Community Cloud.
 
 #### M5 — Evaluación y presentación
 
@@ -235,7 +257,7 @@ Marca cada hito cuando lo termines. Los hitos siguen las sesiones del curso.
 | 4-6 | Diseñé y redacté el prompt de sistema maestro (v1.0) con entrevista guiada, protocolo de triage médico para urgencias vitales, salvaguardas anti-alucinación sobre corpus colombiano y plantilla formal de Derecho de Petición. Documenté la guía y casos de prueba. | `prompts/prompt_sistema_v1.md` y `docs/guia_pruebas_m1.md`. | ¿Es recomendable que el asistente formule preguntas una a una o en bloques de dos para no cansar al usuario? |
 | 7-9 | Documenté formalmente 5 casos de prueba con situaciones ficticias (medicamentos demorados, datos incompletos, fuera de alcance, urgencia vital y ley inexistente). Todos los casos resultaron aprobados. | `docs/casos-de-prueba.md`. | En la Sentencia T-760/08, ¿conviene segmentar por subreglas temáticas antes de montar los embeddings de RAG? |
 | 10-12 | Estructuré el corpus normativo cerrado (6 fuentes oficiales) en `corpus/` con trazabilidad completa en `corpus/README.md`. Implementé el motor RAG en Python (`src/rag_engine.py`) y el script de verificación `test_rag.py`. | Carpeta `corpus/`, `corpus/README.md`, `src/rag_engine.py` y `test_rag.py`. | ¿Qué modelo de LLM gratuito en OpenRouter ofrece mayor fidelidad en la citación de leyes colombianas? |
-| 13-16 | Construí la aplicación web interactiva en Streamlit (`app.py`) con entrevista guiada, triage ético, motor RAG y descarga de peticiones. Elaboré la guía de despliegue en Streamlit Community Cloud. | `app.py` y `docs/guia-despliegue.md`. | ¿Cómo estructurar la evidencia del usuario real para la sustentación de M5? |
+| 13-16 | Construí la aplicación web interactiva en Streamlit (`app.py`) con entrevista guiada, triage ético, motor RAG, semáforo interactivo de términos legales (hábiles vs calendario con alertas WCAG), directorio oficial de radicación de EPS y Supersalud, exportador de PDF judicial formal (`fpdf2`), hoja de ruta post-reclamación, panel de accesibilidad universal WCAG 2.1 AA/AAA (temas de alto contraste Javeriana azul y oro, daltonismo, sepia, tipografía adaptable) y asistencia por voz (reproductor MP3 con `gTTS` y dictado). Desplegué la solución en Streamlit Community Cloud. | `app.py`, `src/eps_directory.py`, `requirements.txt` y URL pública en Streamlit Cloud. | ¿Cómo estructurar la evidencia del usuario real para la sustentación de M5? |
 
 ---
 
@@ -243,11 +265,11 @@ Marca cada hito cuando lo termines. Los hitos siguen las sesiones del curso.
 
 **Hito actual:** M4 — Interfaz web desplegada.
 
-**Estado:** Completado.
+**Estado:** Completado (con suite integral de herramientas ciudadanas y accesibilidad universal).
 
 **Próximo hito:** M5 — Análisis crítico y demo.
 
-Se completó el desarrollo de la aplicación web interactiva `app.py` en Streamlit con diseño adaptado a ciudadanos, protocolo de triage médico, motor RAG integrado, descarga directa del Derecho de Petición y guía de publicación en Streamlit Community Cloud.
+Se completó con éxito el desarrollo y despliegue de la aplicación web interactiva `app.py` en Streamlit Community Cloud. La plataforma no solo cumple los requerimientos de entrevista y generación RAG, sino que incorpora cuatro herramientas ciudadanas especializadas (Semáforo de términos legales, Directorio oficial de EPS/Supersalud, Exportador PDF judicial formal y Hoja de ruta post-reclamación), junto con un sistema integral de **Accesibilidad Universal (WCAG 2.1 Niveles AA y AAA)** con personalización visual (tema de alto contraste Javeriana Azul y Oro, filtro para daltonismo, modo sepia, tipografía dinámica) y **Asistencia por voz** (lectura en voz alta mediante audio MP3 y dictado por voz).
 ---
 
 ## 🛠️ Parte 3 — Stack técnico recomendado
@@ -296,30 +318,35 @@ La arquitectura prevista es la siguiente:
 
 | Componente | Herramienta | Función dentro de ReclamaSalud |
 | --- | --- | --- |
-| Lenguaje | Python | Construir la lógica de la aplicación. |
-| Interfaz web | Streamlit | Mostrar preguntas, advertencias y resultados. |
-| Orquestación | LangChain | Coordinar la búsqueda jurídica y el uso del modelo. |
-| Modelo de lenguaje | OpenRouter | Acceder al LLM que redactará el borrador. |
-| Sistema RAG | LangChain y FAISS | Buscar fragmentos relevantes en el corpus jurídico. |
-| Gestión del código | GitHub | Guardar el proyecto y su historial. |
-| Despliegue | Streamlit Community Cloud | Publicar la herramienta mediante una URL. |
+| Lenguaje | Python | Construir la lógica integral de la aplicación. |
+| Interfaz web | Streamlit | Mostrar la entrevista, advertencias éticas, pestañas de resultado y controles de accesibilidad. |
+| Orquestación | LangChain | Coordinar la recuperación jurídica y el llamado al modelo de lenguaje. |
+| Modelo de lenguaje | OpenRouter | Acceder al LLM gratuito para la redacción del borrador con citas normativas. |
+| Sistema RAG | LangChain y FAISS | Buscar y recuperar fragmentos pertinentes del corpus normativo cerrado. |
+| Generación de PDF | fpdf2 | Generar el documento formal de reclamación en formato PDF judicial forense descargable. |
+| Asistencia por voz (TTS) | gTTS (Google Text-to-Speech) | Sintetizar audio MP3 en español colombiano para lectura en voz alta accesible dentro de Streamlit. |
+| Accesibilidad Universal | CSS3 dinámico + WCAG 2.1 | Implementar temas de alto contraste (Javeriana Azul/Oro), filtros de daltonismo y escalado tipográfico. |
+| Directorio institucional | Módulo propio (`src/eps_directory.py`) | Mapear portales oficiales de radicación de PQRD para más de 12 EPS y canal central de la Supersalud. |
+| Gestión del código | GitHub | Guardar el proyecto, su control de versiones y el historial de cambios. |
+| Despliegue | Streamlit Community Cloud | Publicar la aplicación con URL pública gratuita y actualización continua. |
 
 ### Funcionamiento previsto
 
-1. El usuario describe su problema con la EPS.
+1. El usuario describe su problema con la EPS (mediante texto escrito o dictado por voz).
 2. La herramienta realiza preguntas para completar la información.
-3. Python valida que existan los datos mínimos.
-4. El sistema busca fuentes relacionadas dentro del corpus jurídico.
+3. Python valida que existan los datos mínimos y aplica el protocolo de triage ético.
+4. El sistema busca fuentes relacionadas dentro del corpus jurídico cerrado.
 5. El LLM recibe los hechos y los fragmentos jurídicos recuperados.
-6. El LLM genera un borrador de reclamación con citas.
-7. El usuario puede revisar, copiar o descargar el resultado.
-8. La herramienta no almacena la conversación ni radica automáticamente la reclamación.
+6. El LLM genera un borrador de reclamación con citas explícitas de normas y sentencias.
+7. El Semáforo de términos calcula y diagnostica el plazo legal de respuesta (días hábiles vs. calendario).
+8. El usuario puede escuchar el resultado en voz alta, descargarlo en TXT o PDF formal, y consultar los canales de radicación y la hoja de ruta post-reclamación.
+9. La herramienta no almacena la conversación ni radica automáticamente la reclamación.
 
 ### Seguridad y privacidad
 
 - La clave de OpenRouter se guardará como una variable de entorno.
 - La clave nunca se incluirá en el código ni en GitHub.
-- El prototipo no almacenará conversaciones.
+- El prototipo no almacenará conversaciones ni historiales de audio.
 - Las pruebas utilizarán nombres y situaciones ficticias.
 - No se cargarán historias clínicas ni documentos médicos reales.
 - La interfaz advertirá que no deben ingresarse datos sensibles.
@@ -329,15 +356,19 @@ La arquitectura prevista es la siguiente:
 
 - [x] Arquitectura general definida.
 - [x] Herramientas principales seleccionadas.
-- [x] Entorno de Python configurado (`requirements.txt`).
+- [x] Entorno de Python configurado (`requirements.txt` con `fpdf2` y `gtts`).
 - [x] Interfaz construida (`app.py` en Streamlit).
 - [x] Prompt de sistema implementado (`prompts/prompt_sistema_v1.md`).
 - [x] Corpus procesado (carpeta `corpus/` y catálogo en `corpus/README.md`).
 - [x] Sistema RAG conectado (`src/rag_engine.py`).
 - [x] Modelo de lenguaje conectado (OpenRouter configurable).
-- [x] Aplicación lista y documentada para despliegue (`docs/guia-despliegue.md`).
+- [x] Semáforo interactivo de términos legales integrado (cálculo de plazos hábiles/calendario).
+- [x] Directorio oficial de EPS y canal Supersalud (`src/eps_directory.py`).
+- [x] Exportación a PDF judicial formal (`fpdf2`).
+- [x] Sistema de accesibilidad universal WCAG 2.1 y asistencia por voz implementado.
+- [x] Aplicación lista, desplegada y documentada (`docs/guia-despliegue.md`).
 
-La aplicación está completamente construida y lista para su publicación en Streamlit Community Cloud (Hito **M4 — Interfaz web desplegada**).
+La aplicación está completamente construida y desplegada en Streamlit Community Cloud (Hito **M4 — Interfaz web desplegada**).
 ---
 
 ## 🚀 Parte 4 — Ruta de despliegue
@@ -406,13 +437,15 @@ Estas salvaguardas son **obligatorias** y hacen parte de la evaluación:
 
 - **Advertencia visible obligatoria.** Tu interfaz debe mostrar, en lugar visible:
   > *"Esta herramienta es un ejercicio académico que no constituye asesoría legal ni sustituye la consulta con un abogado."*
-  - [ ] Implementada y visible en la interfaz
+  - [x] Implementada y visible en la interfaz (encabezado y pie de página en `app.py`)
 - **Protección de datos (Ley 1581 de 2012).** Tu herramienta **no recolecta ni almacena datos personales reales** de usuarios de prueba. Los usuarios de prueba usan situaciones ficticias o datos inventados.
-  - [ ] Verificado: no guardo datos personales
+  - [x] Verificado: no guardo datos personales ni historias clínicas
 - **Corpus público.** Solo fuentes públicas: leyes, decretos, jurisprudencia publicada.
-  - [ ] Verificado
+  - [x] Verificado (Constitución Política, Ley 1751/15, Ley 1755/15, Res. 229/20, Circ. Externa 2023151000000010-5, Sentencia T-760/08)
 - **Anti-alucinaciones.** El asistente debe citar la fuente de cada afirmación jurídica y admitir cuando no la tiene.
-  - [ ] Casos de prueba donde la herramienta se niega a inventar
+  - [x] Casos de prueba donde la herramienta se niega a inventar (`docs/casos-de-prueba.md`)
+- **Accesibilidad universal y enfoque diferencial (WCAG 2.1 y Res. MinTIC 1519 de 2020).** La herramienta incorpora diseño universal no discriminatorio: paletas de alto contraste (Estándar Javeriana azul y oro / negro y amarillo), modos para personas con daltonismo, tipografía adaptable, lectura en voz alta en español y dictado accesible, garantizando el acceso a la justicia digital a sujetos de especial protección constitucional.
+  - [x] Implementado y verificado en la interfaz web
 
 ---
 
