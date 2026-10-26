@@ -341,34 +341,34 @@ def render_semaforo_accesible(est_semaforo, msg_semaforo, daltonismo_filtro):
         badge_simbolo = "🟢 [ESTADO NORMAL: DENTRO DEL TÉRMINO LEGAL]"
         icono_dalt = "✔ CÍRCULO / PLAZO VIGENTE"
         if "Deuteranopía" in daltonismo_filtro or "Protanopía" in daltonismo_filtro:
-            borde_estilo = "border: 3px solid #0072B2; background-color: #EDF7FF; color: #003666;"
+            borde_estilo = "border: 2px solid #38BDF8; background-color: #0C4A6E; color: #FFFFFF;"
         else:
-            borde_estilo = "border-left: 8px solid #16A34A; background-color: #F0FDF4; color: #166534;"
+            borde_estilo = "border: 2px solid #22C55E; background-color: #064E3B; color: #FFFFFF;"
     elif est_semaforo == "amarillo":
         badge_simbolo = "🟡 [ALERTA PREVENTIVA: TÉRMINO PRÓXIMO A VENCER O EN MORA INICIAL]"
         icono_dalt = "▲ TRIÁNGULO / ADVERTENCIA"
         if "Deuteranopía" in daltonismo_filtro or "Protanopía" in daltonismo_filtro:
-            borde_estilo = "border: 3px dashed #E69F00; background-color: #FFF8E7; color: #734B00;"
+            borde_estilo = "border: 2px dashed #F59E0B; background-color: #78350F; color: #FFFFFF;"
         else:
-            borde_estilo = "border-left: 8px dashed #CA8A04; background-color: #FEFCE8; color: #854D0E;"
+            borde_estilo = "border: 2px dashed #EAB308; background-color: #713F12; color: #FFFFFF;"
     else:
         badge_simbolo = "🔴 [ALERTA LEGAL MÁXIMA: TÉRMINO VENCIDO / MORA INJUSTIFICADA]"
         icono_dalt = "✖ CUADRADO / MORA GRAVE"
         if "Deuteranopía" in daltonismo_filtro or "Protanopía" in daltonismo_filtro:
-            borde_estilo = "border: 4px double #D55E00; background-color: #FFECE6; color: #661800;"
+            borde_estilo = "border: 3px double #F87171; background-color: #7F1D1D; color: #FFFFFF;"
         else:
-            borde_estilo = "border-left: 8px double #DC2626; background-color: #FEF2F2; color: #991B1B;"
+            borde_estilo = "border: 3px double #EF4444; background-color: #7F1D1D; color: #FFFFFF;"
 
     st.markdown(
         f"""
-        <div style="{borde_estilo} padding: 14px 16px; border-radius: 8px; margin: 10px 0; font-family: sans-serif;">
-            <div style="font-weight: 800; font-size: 14.5px; margin-bottom: 6px;">
+        <div style="{borde_estilo} padding: 14px 16px; border-radius: 8px; margin: 10px 0; font-family: sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+            <div style="font-weight: 800; font-size: 14.5px; margin-bottom: 6px; color: #FFFFFF;">
                 {badge_simbolo}
-                <span style="font-size: 12.5px; font-weight: normal; margin-left: 8px; opacity: 0.9;">
+                <span style="font-size: 12.5px; font-weight: normal; margin-left: 8px; opacity: 0.95; color: #FFFFFF;">
                     (Guía visual accesible: {icono_dalt})
                 </span>
             </div>
-            <div style="font-size: 13.5px; line-height: 1.5;">
+            <div style="font-size: 13.5px; line-height: 1.5; color: #FFFFFF;">
                 {msg_semaforo}
             </div>
         </div>
@@ -470,7 +470,113 @@ def inyectar_css_accesibilidad(modo_apariencia, bg_col, text_col, card_col, btn_
     """
 
     # 2. Modos de contraste específicos
-    if modo_apariencia == "🌙 Alto Contraste Oscuro (WCAG AAA)":
+    if "Estándar Javeriana" in modo_apariencia:
+        css += """
+        /* TEMA INSTITUCIONAL JAVERIANA ALTO CONTRASTE (AZUL NOCHE Y ORO) */
+        .stApp {
+            background-color: #0A192F !important;
+            color: #FFFFFF !important;
+        }
+        [data-testid="stSidebar"] {
+            background-color: #071224 !important;
+            border-right: 2px solid #1E3A5F !important;
+        }
+        h1, [data-testid="stHeader"] h1 {
+            color: #FFC72C !important;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4) !important;
+        }
+        h2, h3 {
+            color: #93C5FD !important;
+        }
+        h4, h5, h6 {
+            color: #E2E8F0 !important;
+        }
+        .main p, .main li, div[data-testid="stMarkdownContainer"] p {
+            color: #F8FAFC !important;
+        }
+        label, [data-testid="stWidgetLabel"] p, [data-testid="stWidgetLabel"] label, .stMarkdown label {
+            color: #FFD166 !important;
+            font-weight: 700 !important;
+            font-size: 0.98rem !important;
+            letter-spacing: 0.3px !important;
+        }
+        input[type="text"], textarea, .stSelectbox [data-baseweb="select"] {
+            background-color: #112240 !important;
+            color: #FFFFFF !important;
+            border: 2px solid #38BDF8 !important;
+            border-radius: 8px !important;
+        }
+        input[type="text"]:focus, textarea:focus {
+            border-color: #FFC72C !important;
+            box-shadow: 0 0 0 3px rgba(255, 199, 44, 0.35) !important;
+        }
+        input::placeholder, textarea::placeholder {
+            color: #94A3B8 !important;
+            opacity: 1 !important;
+        }
+        div[data-baseweb="popover"], div[data-baseweb="menu"], ul[role="listbox"], li[role="option"] {
+            background-color: #112240 !important;
+            color: #FFFFFF !important;
+            border: 1.5px solid #38BDF8 !important;
+        }
+        li[role="option"] {
+            color: #FFFFFF !important;
+        }
+        li[role="option"]:hover {
+            background-color: #1E3A8A !important;
+            color: #FFC72C !important;
+        }
+        [data-testid="stExpander"] {
+            background-color: #112240 !important;
+            border: 2px solid #1E3A8A !important;
+            border-radius: 8px !important;
+        }
+        [data-testid="stExpander"] summary {
+            color: #60A5FA !important;
+            font-weight: 700 !important;
+        }
+        [data-testid="stAlert"] {
+            background-color: #16243E !important;
+            border: 2px solid #F59E0B !important;
+            color: #FEF3C7 !important;
+        }
+        button[kind="primary"] {
+            background-color: #0284C7 !important;
+            border: 2px solid #38BDF8 !important;
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+        }
+        div[data-baseweb="tab-list"] {
+            background-color: transparent !important;
+        }
+        div[data-baseweb="tab"] {
+            color: #CBD5E1 !important;
+        }
+        div[aria-selected="true"] {
+            color: #FFC72C !important;
+            border-bottom-color: #FFC72C !important;
+        }
+        """
+    elif "Modo Claro" in modo_apariencia:
+        css += """
+        .stApp {
+            background-color: #FFFFFF !important;
+            color: #0F172A !important;
+        }
+        h1 { color: #002B49 !important; }
+        h2, h3 { color: #003366 !important; }
+        label, [data-testid="stWidgetLabel"] p { color: #002B49 !important; font-weight: 700 !important; }
+        input[type="text"], textarea, .stSelectbox [data-baseweb="select"] {
+            background-color: #F8FAFC !important;
+            color: #0F172A !important;
+            border: 2px solid #004B87 !important;
+        }
+        [data-testid="stExpander"] {
+            background-color: #F8FAFC !important;
+            border: 2px solid #CBD5E1 !important;
+        }
+        """
+    elif "Alto Contraste Oscuro" in modo_apariencia:
         css += """
         .stApp {
             background-color: #121212 !important;
@@ -492,7 +598,7 @@ def inyectar_css_accesibilidad(modo_apariencia, bg_col, text_col, card_col, btn_
             color: #FFE600 !important;
         }
         """
-    elif modo_apariencia == "📜 Modo Sepia (Lectura Descansada)":
+    elif "Modo Sepia" in modo_apariencia:
         css += """
         .stApp {
             background-color: #FBF0D9 !important;
@@ -513,7 +619,7 @@ def inyectar_css_accesibilidad(modo_apariencia, bg_col, text_col, card_col, btn_
             border: 1.5px solid #C4B59D !important;
         }
         """
-    elif modo_apariencia == "🎨 ¡100% Personalizado a mi gusto!":
+    elif "100% Personalizado" in modo_apariencia:
         css += f"""
         .stApp {{
             background-color: {bg_col} !important;
@@ -618,44 +724,50 @@ with st.sidebar:
         modo_apariencia = st.selectbox(
             "Tema visual de la página:",
             [
-                "🌟 Estándar Javeriana",
-                "🌙 Alto Contraste Oscuro (WCAG AAA)",
+                "🌟 Estándar Javeriana (Alto Contraste Azul y Oro)",
+                "☀️ Javeriana Modo Claro (Contraste Reforzado)",
+                "🌙 Alto Contraste Oscuro (Negro y Amarillo WCAG AAA)",
                 "📜 Modo Sepia (Lectura Descansada)",
                 "👁️ Modo Daltonismo Universal",
                 "🎨 ¡100% Personalizado a mi gusto!"
             ],
             index=0,
-            help="Selecciona un tema o diseña tu propia paleta personalizada."
+            help="Selecciona el tema institucional Javeriana de alto contraste o personaliza tus propios colores."
         )
 
         es_alto_contraste = False
         if modo_apariencia == "🎨 ¡100% Personalizado a mi gusto!":
             st.markdown("**Personaliza tus propios colores:**")
-            color_fondo = st.color_picker("Color de fondo de página:", value="#FFFFFF")
-            color_texto = st.color_picker("Color de los textos:", value="#1A1A1A")
-            color_tarjeta = st.color_picker("Color de recuadros y tarjetas:", value="#F4F6F9")
-            color_primario = st.color_picker("Color de botones principales:", value="#004B87")
-        elif modo_apariencia == "🌙 Alto Contraste Oscuro (WCAG AAA)":
+            color_fondo = st.color_picker("Color de fondo de página:", value="#0A192F")
+            color_texto = st.color_picker("Color de los textos:", value="#FFFFFF")
+            color_tarjeta = st.color_picker("Color de recuadros y tarjetas:", value="#112240")
+            color_primario = st.color_picker("Color de botones principales:", value="#0284C7")
+        elif "🌙 Alto Contraste Oscuro" in modo_apariencia:
             color_fondo = "#121212"
             color_texto = "#FFE600"
             color_tarjeta = "#1E1E1E"
             color_primario = "#FFE600"
             es_alto_contraste = True
-        elif modo_apariencia == "📜 Modo Sepia (Lectura Descansada)":
+        elif "📜 Modo Sepia" in modo_apariencia:
             color_fondo = "#FBF0D9"
             color_texto = "#2B2B2B"
             color_tarjeta = "#F4E7C5"
             color_primario = "#7D4E24"
-        elif modo_apariencia == "👁️ Modo Daltonismo Universal":
-            color_fondo = "#F9F9FB"
-            color_texto = "#101010"
-            color_tarjeta = "#EAECEF"
+        elif "👁️ Modo Daltonismo" in modo_apariencia:
+            color_fondo = "#0B192C"
+            color_texto = "#FFFFFF"
+            color_tarjeta = "#1E293B"
             color_primario = "#0055A5"
-        else:
+        elif "☀️ Javeriana Modo Claro" in modo_apariencia:
             color_fondo = "#FFFFFF"
-            color_texto = "#1A1A1A"
-            color_tarjeta = "#F8F9FA"
+            color_texto = "#0F172A"
+            color_tarjeta = "#F8FAFC"
             color_primario = "#004B87"
+        else: # "🌟 Estándar Javeriana (Alto Contraste Azul y Oro)"
+            color_fondo = "#0A192F"
+            color_texto = "#FFFFFF"
+            color_tarjeta = "#112240"
+            color_primario = "#0284C7"
 
         st.markdown("---")
         tam_fuente = st.slider(
