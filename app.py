@@ -18,6 +18,7 @@ import sys
 import re
 import datetime
 import requests
+import urllib.parse
 import streamlit as st
 
 # Asegurar que el directorio raíz del proyecto esté en sys.path
@@ -286,208 +287,55 @@ def calcular_terminos_legales(fecha_solicitud, tipo_barrera):
 # -----------------------------------------------------------------------------
 # 5. SISTEMA DE ACCESIBILIDAD UNIVERSAL Y ASISTENCIA POR VOZ (WCAG 2.1)
 # -----------------------------------------------------------------------------
-def render_audio_player(texto_a_leer: str, titulo: str = "Escuchar en voz alta", velocidad: float = 1.0, key: str = "tts_1"):
-    """Genera un reproductor accesible de lectura por voz nativa (Text-to-Speech) sin librerías externas."""
-    texto_seguro = (
-        texto_a_leer.replace("\\", "\\\\")
-        .replace("`", "\\`")
-        .replace('"', '\\"')
-        .replace("'", "\\'")
-        .replace("\n", " ")
-        .replace("\r", " ")
-    )
-    if len(texto_seguro) > 3500:
-        texto_seguro = texto_seguro[:3500] + "..."
+def obtener_audio_es(texto: str) -> bytes:
+    """Genera audio MP3 en español colombiano de forma robusta y rápida."""
+    # 1. Intentar con gTTS si está disponible
+    try:
+        from gtts import gTTS
+        import io
+        texto_limpio = re.sub(r'[*_#=\-\[\]]', ' ', texto)
+        texto_limpio = re.sub(r'\s+', ' ', texto_limpio).strip()
+        tts = gTTS(text=texto_limpio[:1200], lang='es', tld='com.co')
+        fp = io.BytesIO()
+        tts.write_to_fp(fp)
+        fp.seek(0)
+        return fp.read()
+    except Exception:
+        pass
 
-    html_code = f"""
-    <div style="margin: 6px 0; display: inline-flex; gap: 8px; align-items: center; font-family: sans-serif;">
-      <button id="btn_speak_{key}" onclick="speak_{key}()" style="
-        background: #004b87; color: white; border: none; padding: 6px 14px;
-        border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer;
-        display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-      ">
-        🔊 {titulo}
-      </button>
-      <button id="btn_stop_{key}" onclick="stop_{key}()" style="
-        background: #6c757d; color: white; border: none; padding: 6px 12px;
-        border-radius: 6px; font-weight: 500; font-size: 13px; cursor: pointer;
-      ">
-        ⏹️ Detener
-      </button>
-      <span id="status_{key}" style="font-size: 12px; color: #555;"></span>
-    </div>
-    <script>
-      function speak_{key}() {{
-        if (!('speechSynthesis' in window)) {{
-          document.getElementById('status_{key}').innerText = 'Navegador sin soporte de voz.';
-          return;
-        }}
-        window.speechSynthesis.cancel();
-        const texto = `{texto_seguro}`;
-        const utterance = new SpeechSynthesisUtterance(texto);
-        utterance.lang = 'es-CO';
-        utterance.rate = {velocidad};
-        
-        utterance.onstart = function() {{
-          document.getElementById('status_{key}').innerText = '▶️ Reproduciendo voz...';
-        }};
-        utterance.onend = function() {{
-          document.getElementById('status_{key}').innerText = '✅ Listo';
-        }};
-        utterance.onerror = function(e) {{
-          document.getElementById('status_{key}').innerText = '⚠️ Audio detenido';
-        }};
-        
-        window.speechSynthesis.speak(utterance);
-      }}
-      function stop_{key}() {{
-        if ('speechSynthesis' in window) {{
-          window.speechSynthesis.cancel();
-          document.getElementById('status_{key}').innerText = '⏹️ Detenido';
-        }}
-      }}
-    </script>
-    """
-    st.components.v1.html(html_code, height=45)
+    # 2. Fallback inmediato con servicio TTS público de Google (sin librerías adicionales)
+    try:
+        import urllib.parse
+        import requests
+        texto_limpio = re.sub(r'[*_#=\-\[\]]', ' ', texto)
+        texto_limpio = re.sub(r'\s+', ' ', texto_limpio).strip()
+        fragmento = texto_limpio[:350]
+        url = f"https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=es&q={urllib.parse.quote(fragmento)}"
+        r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=6)
+        if r.status_code == 200 and len(r.content) > 1000:
+            return r.content
+    except Exception:
+        pass
+    return b""
 
 
-def render_dictado_por_voz():
-    """Widget de dictado por voz mediante Web Speech Recognition con instrucciones accesibles."""
-    html_code = """
-    <div style="
-      border: 2px dashed #004b87; border-radius: 8px; padding: 12px;
-      background: rgba(0, 75, 135, 0.04); margin-bottom: 12px; font-family: sans-serif;
-    ">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
-        <span style="font-weight: 600; font-size: 14px; color: #004b87;">
-          🎙️ Dictado por Voz (Habla al micrófono para narrar tu caso)
-        </span>
-        <button id="btn_dictar" onclick="alternarDictado()" style="
-          background: #e63946; color: white; border: none; padding: 6px 14px;
-          border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer;
-          display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(230,57,70,0.3);
-        ">
-          🎤 Iniciar Dictado
-        </button>
-      </div>
-      <p id="stt_estado" style="font-size: 12px; color: #555; margin: 4px 0;">
-        Haz clic en "Iniciar Dictado" y describe lo que te ocurrió con la EPS. Tu voz se transcribirá en tiempo real.
-      </p>
-      <div id="stt_resultado" style="
-        min-height: 48px; max-height: 100px; overflow-y: auto; background: white;
-        border: 1px solid #ccc; border-radius: 6px; padding: 8px; font-size: 13px;
-        color: #222; margin-top: 6px;
-      "><em>El texto que vayas dictando aparecerá aquí...</em></div>
-      <div style="margin-top: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-        <button id="btn_copiar" onclick="copiarDictado()" style="
-          background: #004b87; color: white; border: none; padding: 5px 12px;
-          border-radius: 4px; font-size: 12px; font-weight: 500; cursor: pointer;
-        ">
-          📋 Copiar texto dictado
-        </button>
-        <span id="stt_aviso_copia" style="font-size: 12px; color: #2a9d8f; font-weight: bold;"></span>
-      </div>
-      <div style="margin-top: 6px; font-size: 11px; color: #666; line-height: 1.3;">
-        💡 <b>Atajo directo en teclado:</b> También puedes hacer clic dentro del cuadro de texto de abajo y presionar la tecla <b>Windows + H</b> (en Windows) o el ícono de micrófono de tu celular para dictar directamente.
-      </div>
-    </div>
+def render_lector_audio(texto: str, titulo: str = "Escuchar en voz alta", key: str = "audio_1"):
+    """Muestra un botón de audio que al presionarse genera y reproduce voz en español nativa."""
+    estado_key = f"reproducir_{key}"
+    if st.button(f"🔊 {titulo}", key=f"btn_{key}", use_container_width=False):
+        st.session_state[estado_key] = True
 
-    <script>
-      let recognition = null;
-      let grabando = false;
-      let transcripcionCompleta = "";
-
-      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-      function alternarDictado() {
-        if (!SpeechRec) {
-          document.getElementById('stt_estado').innerHTML = '⚠️ Tu navegador no soporta reconocimiento de voz nativo en este contenedor. Te recomendamos usar Google Chrome o presionar la tecla <b>Windows + H</b> en tu teclado.';
-          return;
-        }
-
-        const btn = document.getElementById('btn_dictar');
-        const estado = document.getElementById('stt_estado');
-
-        if (!grabando) {
-          recognition = new SpeechRec();
-          recognition.lang = 'es-CO';
-          recognition.continuous = true;
-          recognition.interimResults = true;
-
-          recognition.onstart = function() {
-            grabando = true;
-            btn.innerHTML = '🛑 Detener Dictado';
-            btn.style.background = '#2a9d8f';
-            estado.innerHTML = '🔴 <b>Escuchando micrófono...</b> Habla narrando tu situación con la EPS.';
-          };
-
-          recognition.onresult = function(event) {
-            let intermedio = '';
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
-              if (event.results[i].isFinal) {
-                transcripcionCompleta += event.results[i][0].transcript + ' ';
-              } else {
-                intermedio += event.results[i][0].transcript;
-              }
-            }
-            document.getElementById('stt_resultado').innerText = transcripcionCompleta + intermedio;
-          };
-
-          recognition.onerror = function(event) {
-            estado.innerText = '⚠️ Estado del micrófono: ' + event.error + '. Recuerda autorizar el permiso de micrófono en tu navegador.';
-            detenerGrabacion();
-          };
-
-          recognition.onend = function() {
-            detenerGrabacion();
-          };
-
-          try {
-            recognition.start();
-          } catch(e) {
-            estado.innerText = 'Error al iniciar micrófono: ' + e.message;
-          }
-        } else {
-          if (recognition) {
-            recognition.stop();
-          }
-          detenerGrabacion();
-        }
-      }
-
-      function detenerGrabacion() {
-        grabando = false;
-        const btn = document.getElementById('btn_dictar');
-        if (btn) {
-          btn.innerHTML = '🎤 Iniciar Dictado';
-          btn.style.background = '#e63946';
-        }
-        const estado = document.getElementById('stt_estado');
-        if (estado) {
-          estado.innerHTML = '⏹️ Dictado detenido. Presiona <b>Copiar texto</b> y pégalo abajo.';
-        }
-      }
-
-      function copiarDictado() {
-        const texto = document.getElementById('stt_resultado').innerText;
-        if (!texto || texto.trim().length === 0 || texto.includes('El texto que vayas dictando')) {
-          alert('Primero debes dictar algo para poder copiarlo.');
-          return;
-        }
-        navigator.clipboard.writeText(texto).then(() => {
-          const aviso = document.getElementById('stt_aviso_copia');
-          aviso.innerText = '✅ ¡Copiado al portapapeles! Pégalo con Ctrl+V en el cuadro de abajo.';
-          setTimeout(() => { aviso.innerText = ''; }, 4500);
-        }).catch(err => {
-          alert('Selecciona y copia el texto manualmente.');
-        });
-      }
-    </script>
-    """
-    st.components.v1.html(html_code, height=210)
+    if st.session_state.get(estado_key, False):
+        with st.spinner("🎙️ Generando voz en español..."):
+            audio_bytes = obtener_audio_es(texto)
+            if audio_bytes:
+                st.audio(audio_bytes, format="audio/mp3", autoplay=True)
+                st.caption("ℹ️ *Usa los controles del reproductor para pausar, regular volumen o cambiar velocidad.*")
+            else:
+                st.info("ℹ️ No se pudo cargar el audio en este momento.")
 
 
-def render_semaforo_accesible(est_semaforo, msg_semaforo, daltonismo_filtro, vel_voz):
+def render_semaforo_accesible(est_semaforo, msg_semaforo, daltonismo_filtro):
     """Renderiza el semáforo con soporte daltónico (patrones, bordes, símbolos no cromáticos) y botón de audio."""
     if est_semaforo == "verde":
         badge_simbolo = "🟢 [ESTADO NORMAL: DENTRO DEL TÉRMINO LEGAL]"
@@ -495,107 +343,199 @@ def render_semaforo_accesible(est_semaforo, msg_semaforo, daltonismo_filtro, vel
         if "Deuteranopía" in daltonismo_filtro or "Protanopía" in daltonismo_filtro:
             borde_estilo = "border: 3px solid #0072B2; background-color: #EDF7FF; color: #003666;"
         else:
-            borde_estilo = "border-left: 8px solid #28a745; background-color: rgba(40, 167, 69, 0.12);"
+            borde_estilo = "border-left: 8px solid #16A34A; background-color: #F0FDF4; color: #166534;"
     elif est_semaforo == "amarillo":
         badge_simbolo = "🟡 [ALERTA PREVENTIVA: TÉRMINO PRÓXIMO A VENCER O EN MORA INICIAL]"
         icono_dalt = "▲ TRIÁNGULO / ADVERTENCIA"
         if "Deuteranopía" in daltonismo_filtro or "Protanopía" in daltonismo_filtro:
             borde_estilo = "border: 3px dashed #E69F00; background-color: #FFF8E7; color: #734B00;"
         else:
-            borde_estilo = "border-left: 8px dashed #ffc107; background-color: rgba(255, 193, 7, 0.16);"
+            borde_estilo = "border-left: 8px dashed #CA8A04; background-color: #FEFCE8; color: #854D0E;"
     else:
         badge_simbolo = "🔴 [ALERTA LEGAL MÁXIMA: TÉRMINO VENCIDO / MORA INJUSTIFICADA]"
         icono_dalt = "✖ CUADRADO / MORA GRAVE"
         if "Deuteranopía" in daltonismo_filtro or "Protanopía" in daltonismo_filtro:
             borde_estilo = "border: 4px double #D55E00; background-color: #FFECE6; color: #661800;"
         else:
-            borde_estilo = "border-left: 8px double #dc3545; background-color: rgba(220, 53, 69, 0.16);"
+            borde_estilo = "border-left: 8px double #DC2626; background-color: #FEF2F2; color: #991B1B;"
 
     st.markdown(
         f"""
-        <div style="{borde_estilo} padding: 12px 16px; border-radius: 8px; margin: 10px 0;">
-            <div style="font-weight: bold; font-size: 14px; margin-bottom: 6px;">
+        <div style="{borde_estilo} padding: 14px 16px; border-radius: 8px; margin: 10px 0; font-family: sans-serif;">
+            <div style="font-weight: 800; font-size: 14.5px; margin-bottom: 6px;">
                 {badge_simbolo}
-                <span style="font-size: 12px; font-weight: normal; margin-left: 8px; opacity: 0.85;">
+                <span style="font-size: 12.5px; font-weight: normal; margin-left: 8px; opacity: 0.9;">
                     (Guía visual accesible: {icono_dalt})
                 </span>
             </div>
-            <div style="font-size: 13.5px; line-height: 1.45;">
+            <div style="font-size: 13.5px; line-height: 1.5;">
                 {msg_semaforo}
             </div>
         </div>
         """,
         unsafe_allow_html=True
     )
-    render_audio_player(
-        texto_a_leer=f"Dictamen del semáforo legal. {msg_semaforo}",
+    render_lector_audio(
+        texto=f"Dictamen del semáforo legal. {msg_semaforo}",
         titulo="Escuchar dictamen del semáforo",
-        velocidad=vel_voz,
         key="tts_semaforo"
     )
 
 
-def inyectar_css_accesibilidad(bg_col, text_col, card_col, btn_col, tam_fuente, interlineado, fuente_css, es_alto_contraste=False, daltonismo_filtro="Sin filtro adicional"):
-    """Inyecta reglas CSS dinámicas respetando las Pautas WCAG 2.1 y la personalización de cada usuario."""
+def inyectar_css_accesibilidad(modo_apariencia, bg_col, text_col, card_col, btn_col, tam_fuente, interlineado, fuente_css, daltonismo_filtro="Sin filtro adicional"):
+    """Inyecta reglas CSS dinámicas y elegantes sin romper la jerarquía visual de Streamlit."""
+    
+    # 1. Base tipográfica limpia para párrafos y lecturas
     css = f"""
     <style>
-    /* Tipografía, tamaño y espaciado global accesible */
-    html, body, [class*="css"], .stMarkdown, .stText, p, span, label {{
+    /* Tipografía y lectura cómoda */
+    .stApp, .stMarkdown p, .stMarkdown li, div[data-testid="stMarkdownContainer"] p {{
+        font-family: {fuente_css} !important;
         font-size: {tam_fuente}px !important;
         line-height: {interlineado} !important;
-        font-family: {fuente_css} !important;
     }}
     
-    /* Fondo principal y textos */
-    .stApp {{
-        background-color: {bg_col} !important;
-        color: {text_col} !important;
+    /* Jerarquía de encabezados protegida y proporcional */
+    h1, [data-testid="stHeader"] h1 {{
+        font-size: 2.1rem !important;
+        font-weight: 800 !important;
+        color: #004B87 !important;
+        line-height: 1.25 !important;
     }}
-    
-    h1, h2, h3, h4, h5, h6 {{
-        color: {text_col} !important;
-        font-family: {fuente_css} !important;
+    h2 {{
+        font-size: 1.6rem !important;
+        font-weight: 700 !important;
+        color: #1E293B !important;
+        line-height: 1.3 !important;
     }}
-    
-    /* Cajas de texto y selectores */
-    textarea, input[type="text"] {{
+    h3 {{
+        font-size: 1.3rem !important;
+        font-weight: 700 !important;
+        color: #1E293B !important;
+        line-height: 1.35 !important;
+    }}
+    h4 {{
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        color: #334155 !important;
+    }}
+
+    /* ETIQUETAS DE CAMPOS: 100% VISIBLES, OSCURAS Y LEGIBLES */
+    label, [data-testid="stWidgetLabel"] p, [data-testid="stWidgetLabel"] label, .stMarkdown label {{
+        color: #0F172A !important;
+        font-weight: 700 !important;
+        font-size: 0.95rem !important;
+        opacity: 1 !important;
+        display: block !important;
+        margin-bottom: 5px !important;
+    }}
+
+    /* CAMPOS DE TEXTO E INPUTS: FONDO BLANCO, BORDES CLAROS Y TEXTO OSCURO */
+    input[type="text"], textarea, .stSelectbox [data-baseweb="select"] {{
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+        border: 1.5px solid #94A3B8 !important;
+        border-radius: 8px !important;
         font-size: {tam_fuente}px !important;
-        line-height: {interlineado} !important;
-        font-family: {fuente_css} !important;
     }}
-    
-    /* Botones primarios */
-    button[kind="primary"] {{
-        background-color: {btn_col} !important;
-        border-color: {btn_col} !important;
+
+    /* Texto seleccionado y foco */
+    input[type="text"]:focus, textarea:focus {{
+        border-color: #004B87 !important;
+        box-shadow: 0 0 0 3px rgba(0, 75, 135, 0.25) !important;
+    }}
+
+    /* Placeholders en cursiva suave pero visible */
+    input::placeholder, textarea::placeholder {{
+        color: #64748B !important;
+        opacity: 0.9 !important;
+    }}
+
+    /* Desplegables de Streamlit */
+    div[data-baseweb="popover"], div[data-baseweb="menu"] {{
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+    }}
+
+    /* Expanders limpios */
+    [data-testid="stExpander"] {{
+        border: 1.5px solid #CBD5E1 !important;
+        border-radius: 8px !important;
+        background-color: #F8FAFC !important;
+    }}
+    [data-testid="stExpander"] summary {{
+        font-weight: 700 !important;
+        color: #004B87 !important;
     }}
     """
-    
-    if es_alto_contraste:
+
+    # 2. Modos de contraste específicos
+    if modo_apariencia == "🌙 Alto Contraste Oscuro (WCAG AAA)":
         css += """
-        /* Modo Alto Contraste Oscuro WCAG AAA */
-        .stMarkdown p, .stMarkdown span, label, .stCaption, [data-testid="stSidebar"] * {
+        .stApp {
+            background-color: #121212 !important;
+            color: #FFFFFF !important;
+        }
+        h1, h2, h3, h4, label, [data-testid="stWidgetLabel"] p {
             color: #FFE600 !important;
         }
-        textarea, input[type="text"], .stSelectbox > div > div {
+        input[type="text"], textarea, .stSelectbox [data-baseweb="select"] {
             background-color: #000000 !important;
             color: #FFE600 !important;
             border: 2px solid #FFE600 !important;
         }
         [data-testid="stExpander"] {
-            background-color: #1A1A1A !important;
-            border: 1px solid #FFE600 !important;
+            background-color: #1E1E1E !important;
+            border: 2px solid #FFE600 !important;
         }
-        .stTabs [data-baseweb="tab"] {
+        [data-testid="stExpander"] summary {
             color: #FFE600 !important;
         }
+        """
+    elif modo_apariencia == "📜 Modo Sepia (Lectura Descansada)":
+        css += """
+        .stApp {
+            background-color: #FBF0D9 !important;
+            color: #2B2B2B !important;
+        }
+        h1 { color: #5C3A1E !important; }
+        h2, h3 { color: #3B2613 !important; }
+        label, [data-testid="stWidgetLabel"] p {
+            color: #3B2613 !important;
+        }
+        input[type="text"], textarea, .stSelectbox [data-baseweb="select"] {
+            background-color: #FFFDF7 !important;
+            color: #2B2B2B !important;
+            border: 1.5px solid #C4B59D !important;
+        }
+        [data-testid="stExpander"] {
+            background-color: #F4E7C5 !important;
+            border: 1.5px solid #C4B59D !important;
+        }
+        """
+    elif modo_apariencia == "🎨 ¡100% Personalizado a mi gusto!":
+        css += f"""
+        .stApp {{
+            background-color: {bg_col} !important;
+            color: {text_col} !important;
+        }}
+        h1, h2, h3, h4, label, [data-testid="stWidgetLabel"] p {{
+            color: {text_col} !important;
+        }}
+        input[type="text"], textarea, .stSelectbox [data-baseweb="select"] {{
+            background-color: {card_col} !important;
+            color: {text_col} !important;
+            border: 2px solid {btn_col} !important;
+        }}
+        button[kind="primary"] {{
+            background-color: {btn_col} !important;
+        }}
         """
 
     if "Monocromático" in daltonismo_filtro:
         css += """
-        /* Filtro monocromático para daltonismo total / acromatopsia */
         .stApp {
-            filter: grayscale(100%) contrast(110%) !important;
+            filter: grayscale(100%) contrast(115%) !important;
         }
         """
 
@@ -768,17 +708,11 @@ with st.sidebar:
             ]
         )
 
-        vel_voz = st.slider(
-            "🔊 Velocidad de lectura en voz alta:",
-            min_value=0.7,
-            max_value=1.4,
-            value=1.0,
-            step=0.1,
-            help="0.7x es pausado (recomendado para adultos mayores); 1.0x es velocidad normal."
-        )
+        st.caption("🔊 *Los reproductores de voz cuentan con control de velocidad (0.75x, 1x, 1.25x) y volumen integrados.*")
 
-    # Inyección de estilos de accesibilidad personalizados
+    # Inyección de estilos de accesibilidad limpios y no destructivos
     inyectar_css_accesibilidad(
+        modo_apariencia=modo_apariencia,
         bg_col=color_fondo,
         text_col=color_texto,
         card_col=color_tarjeta,
@@ -786,7 +720,6 @@ with st.sidebar:
         tam_fuente=tam_fuente,
         interlineado=interlineado_css,
         fuente_css=fuente_css,
-        es_alto_contraste=es_alto_contraste,
         daltonismo_filtro=daltonismo_filtro
     )
 
@@ -875,10 +808,9 @@ with st.container():
             "2. **Fundamento legal de protección inmediata:** Conforme al **artículo 14 de la Ley Estatutaria 1751 de 2015**, **TODAS** las clínicas y hospitales de Colombia (públicas y privadas) están obligadas a prestar atención inicial de urgencias de forma obligatoria e inmediata, **sin exigir autorizaciones de la EPS, sin cita previa y sin cobro de copagos ni pagos anticipados**.\n\n"
             "*La vida y la salud inmediata son la prioridad absoluta.*"
         )
-        render_audio_player(
-            texto_a_leer="Alerta de emergencia médica vital. Detenga el trámite de este documento. Los síntomas descritos corresponden a una posible urgencia vital. Comuníquese de inmediato a la línea de emergencias 123 en Colombia o traslade al paciente a la sala de urgencias más cercana. El artículo 14 de la Ley Estatutaria de Salud obliga a todas las clínicas y hospitales a prestar atención obligatoria e inmediata sin autorizaciones ni copagos.",
+        render_lector_audio(
+            texto="Alerta de emergencia médica vital. Detenga el trámite de este documento. Los síntomas descritos corresponden a una posible urgencia vital. Comuníquese de inmediato a la línea de emergencias 123 en Colombia o traslade al paciente a la sala de urgencias más cercana. El artículo 14 de la Ley Estatutaria de Salud obliga a todas las clínicas y hospitales a prestar atención obligatoria e inmediata sin autorizaciones ni copagos.",
             titulo="Escuchar alerta de urgencia vital en voz alta",
-            velocidad=vel_voz,
             key="tts_urgencia"
         )
     else:
@@ -891,17 +823,23 @@ with st.container():
             # Semáforo de Término Legal Accesible (WCAG 2.1)
             d_cal, d_hab, est_semaforo, msg_semaforo = calcular_terminos_legales(fecha_orden, tipo_barrera)
             st.markdown("#### 🚦 Semáforo de Término Legal")
-            render_semaforo_accesible(est_semaforo, msg_semaforo, daltonismo_filtro, vel_voz)
+            render_semaforo_accesible(est_semaforo, msg_semaforo, daltonismo_filtro)
 
         with col_f2:
             st.markdown("#### 📝 Narración de los Hechos de tu Caso")
-            render_dictado_por_voz()
             relato_hechos = st.text_area(
-                "Describe cronológicamente lo sucedido (o dicta con el micrófono arriba):",
+                "✍️ Describe cronológicamente lo sucedido con la EPS:",
                 value="",
-                placeholder="Describe aquí qué ocurrió: qué fecha acudiste, qué respuesta te dieron en la farmacia o EPS, cuánto tiempo llevas esperando y cómo ha afectado tu salud...",
-                height=200
+                placeholder="Escribe aquí los hechos: fecha en que ordenaron el servicio, qué respuesta te dieron en la farmacia o EPS, cuánto tiempo llevas esperando y cómo ha afectado tu salud...",
+                height=180
             )
+            with st.expander("🎙️ ¿Cómo dictarle con tu voz a este cuadro?", expanded=False):
+                st.markdown(
+                    "Puedes narrar tu caso hablando directamente a tu micrófono sin escribir en el teclado:\n\n"
+                    "- 💻 **En Windows (PC o Portátil):** Haz clic dentro del cuadro de texto superior y presiona la combinación de teclas **`Windows + H`**. Aparecerá el micrófono de Windows y transcribirá todo lo que hables en español directamente en la caja.\n"
+                    "- 📱 **En celulares (Android o iPhone):** Toca dentro del cuadro de texto y presiona el ícono del **Micrófono 🎙️** en la esquina de tu teclado para dictar.\n"
+                    "- 🍎 **En Mac:** Presiona dos veces la tecla `Fn` o activa el dictado por voz de macOS."
+                )
 
     st.divider()
 
@@ -1028,10 +966,9 @@ if "borrador_generado" in st.session_state and not es_urgencia:
 
     with tab_doc:
         st.markdown("### Borrador Formal de Derecho de Petición ante la EPS")
-        render_audio_player(
-            texto_a_leer=st.session_state["borrador_generado"],
-            titulo="Escuchar Derecho de Petición completo",
-            velocidad=vel_voz,
+        render_lector_audio(
+            texto=st.session_state["borrador_generado"],
+            titulo="Escuchar Derecho de Petición en voz alta",
             key="tts_peticion"
         )
         st.caption("Revisa el texto, completa los campos entre corchetes `[...]` y descarga tu documento en PDF o Texto.")
@@ -1084,10 +1021,9 @@ if "borrador_generado" in st.session_state and not es_urgencia:
 
     with tab_hoja_ruta:
         st.markdown("### 🗺️ Hoja de Ruta Post-Reclamación")
-        render_audio_player(
-            texto_a_leer="Hoja de ruta post reclamación. Paso 1: Radica el documento por el portal web oficial o en ventanilla física exigiendo sello de recibido con fecha, hora y número de radicado. Paso 2: Si la EPS responde favorablemente, acude por tu servicio. Paso 3A: Si la EPS no responde o niega el servicio, presenta queja formal ante la Superintendencia Nacional de Salud aportando copia de tu petición. Paso 3B: Si la falta de atención compromete tu salud o vida digna, puedes interponer una Acción de Tutela con apoyo gratuito de la Personería o la Defensoría del Pueblo.",
+        render_lector_audio(
+            texto="Hoja de ruta post reclamación. Paso 1: Radica el documento por el portal web oficial o en ventanilla física exigiendo sello de recibido con fecha, hora y número de radicado. Paso 2: Si la EPS responde favorablemente, acude por tu servicio. Paso 3A: Si la EPS no responde o niega el servicio, presenta queja formal ante la Superintendencia Nacional de Salud aportando copia de tu petición. Paso 3B: Si la falta de atención compromete tu salud o vida digna, puedes interponer una Acción de Tutela con apoyo gratuito de la Personería o la Defensoría del Pueblo.",
             titulo="Escuchar Hoja de Ruta en voz alta",
-            velocidad=vel_voz,
             key="tts_ruta"
         )
         st.write("¿Qué pasos debes seguir una vez tengas tu derecho de petición listo?")
