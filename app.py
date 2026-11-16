@@ -17,6 +17,7 @@ import os
 import sys
 import re
 import datetime
+import unicodedata
 import requests
 import urllib.parse
 import streamlit as st
@@ -170,13 +171,82 @@ def get_eps_info(nombre_eps: str) -> dict:
     }
 
 # -----------------------------------------------------------------------------
-# 3. GENERADOR DE PDF FORMAL (Con soporte de fpdf2)
+# 3. GENERADOR DE PDF FORMAL (Con soporte de fpdf2 y sanitización Latin-1)
 # -----------------------------------------------------------------------------
 try:
     from fpdf import FPDF
     FPDF_INSTALADO = True
 except ImportError:
     FPDF_INSTALADO = False
+
+def limpiar_texto_para_pdf(texto: str) -> str:
+    """Limpia y normaliza el texto para garantizar compatibilidad total con fuentes Latin-1/Helvetica en fpdf2."""
+    if not texto:
+        return ""
+    
+    # 1. Normalización Unicode precompuesta (NFC) para preservar tildes de español (á, é, í, ó, ú, ñ)
+    texto = unicodedata.normalize("NFC", str(texto))
+    
+    # 2. Reemplazo de caracteres especiales y tipográficos enriquecidos por sus equivalentes estándar
+    reemplazos = {
+        "—": "-",   # Em-dash (causa directa del error reportado)
+        "–": "-",   # En-dash
+        "―": "-",   # Horizontal bar
+        "“": '"',   # Comillas tipográficas
+        "”": '"',
+        "„": '"',
+        "«": '"',
+        "»": '"',
+        "‘": "'",   # Comillas simples tipográficas
+        "’": "'",
+        "‚": "'",
+        "…": "...", # Puntos suspensivos Unicode
+        "•": "* ",  # Viñetas
+        "·": "* ",
+        "▪": "* ",
+        "▫": "* ",
+        "◦": "* ",
+        "✓": "[OK] ",
+        "✔": "[OK] ",
+        "✕": "[X] ",
+        "✖": "[X] ",
+        "▲": "[!] ",
+        "▼": "[v] ",
+        "►": "> ",
+        "◄": "< ",
+        "⚖": "",
+        "🤖": "",
+        "📄": "",
+        "📋": "",
+        "💬": "",
+        "🚨": "[ALERTA] ",
+        "⚠️": "[ALERTA] ",
+        "⚠": "[ALERTA] ",
+        "ℹ": "[i] ",
+        "º": "o.",
+        "ª": "a.",
+        "\u200b": "",  # Zero-width space
+        "\u202f": " ", # Narrow non-breaking space
+        "\u00a0": " ", # Non-breaking space
+    }
+    for orig, dest in reemplazos.items():
+        texto = texto.replace(orig, dest)
+    
+    # 3. Filtrar de forma segura cualquier caracter que no se pueda codificar en latin-1
+    chars_seguros = []
+    for char in texto:
+        try:
+            char.encode("latin-1")
+            chars_seguros.append(char)
+        except UnicodeEncodeError:
+            descompuesto = unicodedata.normalize("NFKD", char)
+            ascii_equiv = "".join(c for c in descompuesto if ord(c) < 128)
+            if ascii_equiv:
+                chars_seguros.append(ascii_equiv)
+            else:
+                chars_seguros.append(" ")
+                
+    return "".join(chars_seguros)
 
 def generar_pdf_derecho_peticion(texto_peticion: str) -> bytes:
     """Genera un archivo PDF con formato judicial elegante a partir del texto."""
@@ -187,7 +257,8 @@ def generar_pdf_derecho_peticion(texto_peticion: str) -> bytes:
         def header(self):
             self.set_font("Helvetica", "B", 8)
             self.set_text_color(100, 110, 120)
-            self.cell(0, 5, "RECLAMASALUD — ASISTENTE ACADEMICO | PONTIFICIA UNIVERSIDAD JAVERIANA", 0, 1, "C")
+            # Usar guión estándar (-) para evitar caracteres fuera de Latin-1 en fuentes básicas
+            self.cell(0, 5, "RECLAMASALUD - ASISTENTE ACADEMICO | PONTIFICIA UNIVERSIDAD JAVERIANA", 0, 1, "C")
             self.set_draw_color(180, 190, 200)
             self.line(20, 14, 190, 14)
             self.ln(5)
@@ -198,11 +269,8 @@ def generar_pdf_derecho_peticion(texto_peticion: str) -> bytes:
             self.set_text_color(140, 140, 140)
             self.cell(0, 10, f"Pagina {self.page_no()}/{{nb}} - Ejercicio del Derecho de Peticion (Ley 1755 de 2015)", 0, 0, "C")
 
-    # Limpieza de caracteres para latin-1
-    t = texto_peticion
-    for k, v in {"—": "-", "–": "-", "“": '"', "”": '"', "‘": "'", "’": "'", "…": "...", "•": "*"}.items():
-        t = t.replace(k, v)
-    t = re.sub(r"[^\x00-\xFF]", "", t)
+    # Limpieza exhaustiva de texto para Latin-1
+    t = limpiar_texto_para_pdf(texto_peticion)
 
     pdf = PDFDoc(orientation="P", unit="mm", format="A4")
     pdf.set_margins(left=20, top=20, right=20)
@@ -854,7 +922,7 @@ with st.container():
     st.markdown("### 1️⃣ Datos de Afiliación y Contacto")
     col1, col2, col3 = st.columns(3)
     with col1:
-        nombre_usuario = st.text_input("Nombre del paciente o peticionario:", value="", placeholder="Ej. Juan Pérez (Simulado)")
+        nombre_usuario = st.text_input("Nombre del paciente o peticionario (Usa nombre ficticio):", value="", placeholder="Ej. Juan Pérez (Simulado)")
         rol_usuario = st.selectbox("¿Quién presenta la reclamación?", [
             "El paciente directamente",
             "Familiar / Cuidador autorizado del paciente",
@@ -870,7 +938,7 @@ with st.container():
         regimen = st.selectbox("Régimen de Afiliación:", ["Contributivo (Cotizante)", "Contributivo (Beneficiario)", "Subsidiado"])
     with col3:
         ciudad = st.text_input("Ciudad / Municipio de residencia:", value="", placeholder="Ej. Bogotá D.C.")
-        cedula_simulada = st.text_input("Número de documento:", value="", placeholder="Ej. 1.020.304.050")
+        cedula_simulada = st.text_input("Número de documento ficticio:", value="", placeholder="Ej. 1.020.304.050")
 
     # Directorio de radicación de la EPS seleccionada
     info_eps = get_eps_info(eps_nombre)
