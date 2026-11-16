@@ -255,19 +255,28 @@ def generar_pdf_derecho_peticion(texto_peticion: str) -> bytes:
 
     class PDFDoc(FPDF):
         def header(self):
+            self.set_x(self.l_margin)
             self.set_font("Helvetica", "B", 8)
             self.set_text_color(100, 110, 120)
-            # Usar guión estándar (-) para evitar caracteres fuera de Latin-1 en fuentes básicas
-            self.cell(0, 5, "RECLAMASALUD - ASISTENTE ACADEMICO | PONTIFICIA UNIVERSIDAD JAVERIANA", 0, 1, "C")
+            # Usar ancho epw explícito en lugar de 0 para evitar errores de cálculo horizontal
+            try:
+                self.cell(w=self.epw, h=5, text="RECLAMASALUD - ASISTENTE ACADEMICO | PONTIFICIA UNIVERSIDAD JAVERIANA", align="C", new_x="LMARGIN", new_y="NEXT")
+            except TypeError:
+                self.cell(w=self.epw, h=5, txt="RECLAMASALUD - ASISTENTE ACADEMICO | PONTIFICIA UNIVERSIDAD JAVERIANA", align="C", ln=1)
             self.set_draw_color(180, 190, 200)
-            self.line(20, 14, 190, 14)
-            self.ln(5)
+            self.line(self.l_margin, 14, self.w - self.r_margin, 14)
+            self.ln(4)
+            self.set_x(self.l_margin)
 
         def footer(self):
             self.set_y(-15)
+            self.set_x(self.l_margin)
             self.set_font("Helvetica", "I", 8)
             self.set_text_color(140, 140, 140)
-            self.cell(0, 10, f"Pagina {self.page_no()}/{{nb}} - Ejercicio del Derecho de Peticion (Ley 1755 de 2015)", 0, 0, "C")
+            try:
+                self.cell(w=self.epw, h=10, text=f"Pagina {self.page_no()}/{{nb}} - Ejercicio del Derecho de Peticion (Ley 1755 de 2015)", align="C")
+            except TypeError:
+                self.cell(w=self.epw, h=10, txt=f"Pagina {self.page_no()}/{{nb}} - Ejercicio del Derecho de Peticion (Ley 1755 de 2015)", align="C")
 
     # Limpieza exhaustiva de texto para Latin-1
     t = limpiar_texto_para_pdf(texto_peticion)
@@ -277,37 +286,62 @@ def generar_pdf_derecho_peticion(texto_peticion: str) -> bytes:
     pdf.set_auto_page_break(auto=True, margin=18)
     pdf.alias_nb_pages()
     pdf.add_page()
+    ancho_util = getattr(pdf, "epw", 170)
+
+    def imprimir_bloque(texto, estilo="", tamano=9.5, color=(20, 25, 30), interlineado=5, espacio_antes=0, espacio_despues=0):
+        if espacio_antes > 0:
+            pdf.ln(espacio_antes)
+        pdf.set_x(pdf.l_margin)
+        
+        if not texto:
+            pdf.ln(interlineado / 2)
+            pdf.set_x(pdf.l_margin)
+            return
+
+        pdf.set_font("Helvetica", estilo, tamano)
+        pdf.set_text_color(*color)
+        
+        # Evitar palabras o cadenas sin espacios excesivamente largas que rompan el ancho de línea
+        tokens = []
+        for word in texto.split(" "):
+            if len(word) > 35:
+                # Fragmentar cadenas largas (e.g. líneas de guiones o URLs) cada 35 caracteres
+                partes = [word[i:i+35] for i in range(0, len(word), 35)]
+                tokens.append(" ".join(partes))
+            else:
+                tokens.append(word)
+        texto_seguro = " ".join(tokens)
+
+        try:
+            pdf.multi_cell(w=ancho_util, h=interlineado, text=texto_seguro, new_x="LMARGIN", new_y="NEXT", wrapmode="CHAR")
+        except TypeError:
+            try:
+                pdf.multi_cell(w=ancho_util, h=interlineado, txt=texto_seguro)
+            except Exception:
+                pdf.multi_cell(170, interlineado, texto_seguro)
+            pdf.set_x(pdf.l_margin)
+
+        if espacio_despues > 0:
+            pdf.ln(espacio_despues)
+            pdf.set_x(pdf.l_margin)
 
     for line in t.split("\n"):
         s = line.strip()
-        if s.startswith("====") or s.startswith("----"):
+        if s.startswith("====") or s.startswith("----") or s.startswith("____"):
             pdf.ln(2)
-            pdf.set_draw_color(200, 200, 200)
-            pdf.line(20, pdf.get_y(), 190, pdf.get_y())
+            pdf.set_x(pdf.l_margin)
+            pdf.set_draw_color(180, 190, 200)
+            pdf.line(pdf.l_margin, pdf.get_y(), pdf.w - pdf.r_margin, pdf.get_y())
             pdf.ln(3)
+            pdf.set_x(pdf.l_margin)
         elif re.match(r"^(I|II|III|IV|V)\.\s+[A-Z\s]+", s) or s.startswith("ASUNTO:"):
-            pdf.ln(3)
-            pdf.set_font("Helvetica", "B", 10)
-            pdf.set_text_color(15, 30, 60)
-            pdf.multi_cell(0, 5, s)
-            pdf.ln(1)
+            imprimir_bloque(s, estilo="B", tamano=10, color=(15, 30, 60), interlineado=5, espacio_antes=2, espacio_despues=1)
         elif s.startswith("Señores:") or s.startswith("Senores:") or s.startswith("Peticionario") or s.startswith("Atentamente,"):
-            pdf.set_font("Helvetica", "B", 9.5)
-            pdf.set_text_color(30, 40, 50)
-            pdf.multi_cell(0, 5, s)
-            pdf.ln(1)
+            imprimir_bloque(s, estilo="B", tamano=9.5, color=(30, 40, 50), interlineado=5, espacio_despues=1)
         elif "ADVERTENCIA:" in s:
-            pdf.ln(2)
-            pdf.set_font("Helvetica", "I", 8)
-            pdf.set_text_color(120, 30, 30)
-            pdf.multi_cell(0, 4, s)
+            imprimir_bloque(s, estilo="I", tamano=8, color=(120, 30, 30), interlineado=4, espacio_antes=1, espacio_despues=1)
         else:
-            pdf.set_font("Helvetica", "", 9.5)
-            pdf.set_text_color(20, 25, 30)
-            if s:
-                pdf.multi_cell(0, 5, s)
-            else:
-                pdf.ln(2)
+            imprimir_bloque(s, estilo="", tamano=9.5, color=(20, 25, 30), interlineado=5)
 
     return bytes(pdf.output())
 
