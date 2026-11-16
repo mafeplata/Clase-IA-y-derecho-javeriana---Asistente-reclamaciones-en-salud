@@ -956,7 +956,7 @@ with st.container():
     st.markdown("### 1️⃣ Datos de Afiliación y Contacto")
     col1, col2, col3 = st.columns(3)
     with col1:
-        nombre_usuario = st.text_input("Nombre del paciente o peticionario (Usa nombre ficticio):", value="", placeholder="Ej. Juan Pérez (Simulado)")
+        nombre_usuario = st.text_input("Nombre del paciente o peticionario:", value="", placeholder="Ej. Juan Pérez (Simulado)")
         rol_usuario = st.selectbox("¿Quién presenta la reclamación?", [
             "El paciente directamente",
             "Familiar / Cuidador autorizado del paciente",
@@ -972,7 +972,7 @@ with st.container():
         regimen = st.selectbox("Régimen de Afiliación:", ["Contributivo (Cotizante)", "Contributivo (Beneficiario)", "Subsidiado"])
     with col3:
         ciudad = st.text_input("Ciudad / Municipio de residencia:", value="", placeholder="Ej. Bogotá D.C.")
-        cedula_simulada = st.text_input("Número de documento ficticio:", value="", placeholder="Ej. 1.020.304.050")
+        cedula_simulada = st.text_input("Número de documento:", value="", placeholder="Ej. 1.020.304.050")
 
     # Directorio de radicación de la EPS seleccionada
     info_eps = get_eps_info(eps_nombre)
