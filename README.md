@@ -506,7 +506,7 @@ Requisitos de entrega del curso — todos deben estar ✅:
 - [x] 👤 **Usuario real**: una persona externa al curso probó la herramienta en un caso de demora en entrega de medicamentos, con evidencia en video archivada en [`docs/Evidencia-usuario/Video evidencia usuario.mp4`](docs/Evidencia-usuario/Video%20evidencia%20usuario.mp4) y reporte de usabilidad documentado en [`docs/evidencia-usuario.md`](docs/evidencia-usuario.md).
 - [x] 📦 **Repositorio con historial**: este repositorio documenta la evolución completa del proyecto semana a semana (commits continuos, bitácora de 17 semanas y control de cambios).
 - [x] 🧠 **Análisis crítico**: Parte 7 completada con rigor jurisprudencial (Sentencias T-760/08 y SU-508/20), bioético y procesal.
-- [x] 📋 Partes 1–7 de este README completas, coherentes y al día, acompañadas del guión estructurado de sustentación en [`docs/guion-sustentacion-m5.md`](docs/guion-sustentacion-m5.md).
+- [x] 📋 Partes 1–7 de este README completas, coherentes y al día.
 
 ---
 
