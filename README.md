@@ -175,7 +175,7 @@ Marca cada hito cuando lo termines. Los hitos siguen las sesiones del curso.
 - [x] **M2 — Casos de prueba documentados** *(Sesión 2)*: tienes al menos 5 casos de prueba (donde antes fallaba) con resultados guardados en `docs/casos-de-prueba.md`.
 - [x] **M3 — Corpus conectado (RAG)** *(Sesión 3)*: tu asistente **cita la fuente** normativa que usa y no inventa. Corpus cargado en `corpus/`.
 - [x] **M4 — Interfaz web desplegada** *(Sesión 4)*: tu herramienta tiene **URL pública** (ver Parte 4) y tu primer usuario real la probó con evidencia.
-- [ ] **M5 — Análisis crítico y demo** *(Sesión 5)*: Parte 7 completada + presentación de 5 minutos.
+- [x] **M5 — Análisis crítico y demo** *(Sesión 5)*: Parte 7 completada + presentación de 5 minutos.
 
 ---
 
@@ -239,13 +239,13 @@ Marca cada hito cuando lo termines. Los hitos siguen las sesiones del curso.
 
 #### M5 — Evaluación y presentación
 
-- [ ] Realizar una prueba con un usuario.
-- [ ] Utilizar únicamente casos ficticios o datos inventados.
-- [ ] Guardar evidencia de la prueba.
-- [ ] Registrar los comentarios del usuario.
-- [ ] Identificar por lo menos dos limitaciones.
-- [ ] Completar el análisis crítico de la Parte 7.
-- [ ] Preparar la demostración de cinco minutos.
+- [x] Realizar una prueba con un usuario real externo al curso.
+- [x] Utilizar únicamente casos ficticios o datos inventados para salvaguardar la privacidad (Ley 1581 de 2012).
+- [x] Guardar evidencia de la prueba (video en `docs/Evidencia-usuario/Video evidencia usuario.mp4`).
+- [x] Registrar los comentarios y retroalimentación del usuario en `docs/evidencia-usuario.md`.
+- [x] Identificar por lo menos dos limitaciones jurídicas y técnicas profundas.
+- [x] Completar el análisis crítico de la Parte 7 con rigor constitucional y sanitario.
+- [x] Preparar el guión de la demostración de cinco minutos (`docs/guion-sustentacion-m5.md`).
 
 ---
 
@@ -258,18 +258,19 @@ Marca cada hito cuando lo termines. Los hitos siguen las sesiones del curso.
 | 7-9 | Documenté formalmente 5 casos de prueba con situaciones ficticias (medicamentos demorados, datos incompletos, fuera de alcance, urgencia vital y ley inexistente). Todos los casos resultaron aprobados. | `docs/casos-de-prueba.md`. | En la Sentencia T-760/08, ¿conviene segmentar por subreglas temáticas antes de montar los embeddings de RAG? |
 | 10-12 | Estructuré el corpus normativo cerrado (6 fuentes oficiales) en `corpus/` con trazabilidad completa en `corpus/README.md`. Implementé el motor RAG en Python (`src/rag_engine.py`) y el script de verificación `test_rag.py`. | Carpeta `corpus/`, `corpus/README.md`, `src/rag_engine.py` y `test_rag.py`. | ¿Qué modelo de LLM gratuito en OpenRouter ofrece mayor fidelidad en la citación de leyes colombianas? |
 | 13-16 | Construí la aplicación web interactiva en Streamlit (`app.py`) con entrevista guiada, triage ético, motor RAG, semáforo interactivo de términos legales (hábiles vs calendario con alertas WCAG), directorio oficial de radicación de EPS y Supersalud, exportador de PDF judicial formal (`fpdf2`), hoja de ruta post-reclamación, panel de accesibilidad universal WCAG 2.1 AA/AAA (temas de alto contraste Javeriana azul y oro, daltonismo, sepia, tipografía adaptable) y asistencia por voz (reproductor MP3 con `gTTS` y dictado). Desplegué la solución en Streamlit Community Cloud. | `app.py`, `src/eps_directory.py`, `requirements.txt` y URL pública en Streamlit Cloud. | ¿Cómo estructurar la evidencia del usuario real para la sustentación de M5? |
+| 17 | Realicé la prueba de usabilidad con un usuario real externo al curso sobre un caso de demora en medicamentos, registrando el video completo en `docs/Evidencia-usuario/Video evidencia usuario.mp4`. Documenté los resultados en `docs/evidencia-usuario.md`, completé el análisis crítico jurisprudencial (Parte 7), cerré los entregables (Parte 8) y diseñé el guión de presentación de 5 minutos para la sustentación (`docs/guion-sustentacion-m5.md`). | `docs/evidencia-usuario.md`, `docs/Evidencia-usuario/`, `docs/guion-sustentacion-m5.md` y Partes 7-8 del README. | ¿Cómo proyectar la herramienta hacia la labor probatoria en consultorios jurídicos universitarios? |
 
 ---
 
 ### Estado actual del proyecto
 
-**Hito actual:** M4 — Interfaz web desplegada.
+**Hito actual:** M5 — Análisis crítico y demo.
 
-**Estado:** Completado (con suite integral de herramientas ciudadanas y accesibilidad universal).
+**Estado:** Completado (Proyecto 100% finalizado, probado y documentado para sustentación final).
 
-**Próximo hito:** M5 — Análisis crítico y demo.
+**Próximo paso:** Presentación y sustentación final de 5 minutos ante el docente Pedro Ardila.
 
-Se completó con éxito el desarrollo y despliegue de la aplicación web interactiva `app.py` en Streamlit Community Cloud. La plataforma no solo cumple los requerimientos de entrevista y generación RAG, sino que incorpora cuatro herramientas ciudadanas especializadas (Semáforo de términos legales, Directorio oficial de EPS/Supersalud, Exportador PDF judicial formal y Hoja de ruta post-reclamación), junto con un sistema integral de **Accesibilidad Universal (WCAG 2.1 Niveles AA y AAA)** con personalización visual (tema de alto contraste Javeriana Azul y Oro, filtro para daltonismo, modo sepia, tipografía dinámica) y **Asistencia por voz** (lectura en voz alta mediante audio MP3 y dictado por voz).
+Se cumplieron a cabalidad todos los hitos del curso (M0 a M5). La aplicación web interactiva `app.py` se encuentra desplegada y funcionando en la nube con su suite completa de herramientas ciudadanas (Semáforo de términos legales, Directorio de radicación de EPS, Generador PDF judicial, Hoja de ruta post-reclamación, Accesibilidad WCAG 2.1 y Asistencia por voz). Se cuenta con evidencia de prueba con usuario real en video (`docs/Evidencia-usuario/Video evidencia usuario.mp4`), informe de usuario (`docs/evidencia-usuario.md`), análisis crítico de fondo (Parte 7) y guión estructurado de sustentación (`docs/guion-sustentacion-m5.md`).
 ---
 
 ## 🛠️ Parte 3 — Stack técnico recomendado
@@ -453,9 +454,47 @@ Estas salvaguardas son **obligatorias** y hacen parte de la evaluación:
 
 Responde con total honestidad — aquí es donde demuestras tu criterio jurídico:
 
-1. **¿Dónde falla tu herramienta?** Describe 2 situaciones donde se equivoca o se queda corta.
-2. **¿Qué datos procesa?** Qué entra, qué se guarda, qué sale.
-3. **¿Por qué no reemplaza al abogado?** Argumenta en 5–8 frases.
+### 1. ¿Dónde falla tu herramienta? Describe 2 situaciones donde se equivoca o se queda corta.
+
+#### Situación A: Controversias de pertinencia médica compleja, tecnologías excluidas expresamente de la UPC y discrepancias entre facultativos (Conflicto Iatrogénico vs. Barrera Administrativa)
+La herramienta opera con solvencia técnico-jurídica cuando el obstáculo es una barrera puramente administrativa sobre tecnologías en salud ya prescritas formalmente por un médico de la red (demoras en agenda, citas con especialista no programadas, trámites burocráticos indebidos o desabastecimiento farmacéutico). Sin embargo, la herramienta **se queda corta cuando el conflicto versa sobre pertinencia médica o científica no resuelta**:
+- Cuando se reclaman medicamentos o procedimientos expresamente excluidos de la financiación con recursos públicos de la UPC (artículo 15 de la Ley Estatutaria 1751 de 2015 y Resolución 2292 de 2024 de MinSalud), medicamentos en fase experimental, tratamientos estéticos o tecnologías solicitadas por médicos particulares que no cuentan con la debida convalidación u homologación por el médico tratante de la EPS (reglas vinculantes de las **Sentencias T-760 de 2008** y **SU-508 de 2020** de la Corte Constitucional).
+- La IA no posee criterio clínico, no puede evaluar la *lex artis ad hoc*, ni puede interpretar paraclínicos o historias clínicas para formular el juicio de necesidad y ausencia de sustituto terapéutico en el Plan de Beneficios en Salud (PBS). En estos casos, la herramienta genera un borrador estándar basado en el principio de continuidad e integralidad, pero resulta insuficiente ante un comité técnico-científico o un juez de tutela que exige demostrar científicamente el riesgo inminente y la idoneidad farmacológica.
+
+#### Situación B: Incompetencia procesal ante silencios administrativos reiterados, necesidad de medidas cautelares provisionales y litigio en sede de tutela (Límites del Derecho de Petición)
+El alcance de ReclamaSalud se agota en la fase prejudicial de reclamación administrativa directa mediante Derecho de Petición (Ley 1755 de 2015). Cuando una EPS incurre en un silencio administrativo persistente, emite una respuesta evasiva o el paciente sufre un deterioro clínico súbito que pone en riesgo inminente su vida o integridad funcional sin dar espera a los 15 días hábiles de ley:
+- El derecho de petición se torna materialmente ineficaz como mecanismo de auxilio urgente. La herramienta se queda corta porque **no interpone acciones judiciales, no formula Acciones de Tutela con solicitud de Medidas Cautelares Provisionales (artículo 7 del Decreto 2591 de 1991)**, ni puede tramitar incidentes de desacato frente a órdenes judiciales desatendidas.
+- La herramienta ofrece una hoja de ruta pedagógica y un semáforo de plazos, pero no puede asumir la representación procesal, el test de subsidiariedad ni la defensa técnica litigiosa que se requiere ante los jueces de la República.
+
+---
+
+### 2. ¿Qué datos procesa? Qué entra, qué se guarda, qué sale.
+
+* **Qué entra (Inputs):**
+  * Datos fácticos ingresados por el usuario mediante formulario guiado: identificación del peticionario (nombre y documento), calidad de actuación (directa o cuidador), EPS reclamada, régimen de afiliación, municipio de atención, nombre del médico tratante, fecha de la orden médica, servicio o tecnología reclamada y narración libre del problema.
+  * Opcionalmente, texto dictado por reconocimiento de voz por teclado o solicitudes de audio para la lectura en voz alta accesible.
+* **Qué se guarda (Persistencia y Privacidad — Ley 1581 de 2012):**
+  * **CERO ALMACENAMIENTO PERSISTENTE DE DATOS SENSIBLES O HISTORIAS CLÍNICAS.**
+  * La aplicación es de arquitectura efímera (*stateless*): los datos procesados únicamente residen en la memoria volátil de la sesión de Streamlit (`st.session_state`) mientras el navegador se encuentra abierto.
+  * No se utiliza base de datos relacional externa, no se graban registros con información personal, no se transmiten historiales médicos a terceros con fines comerciales y las llaves de acceso a modelos de lenguaje se administran mediante variables de entorno seguras (`st.secrets`).
+  * Al cerrar o recargar la pestaña del navegador, todos los datos ingresados desaparecen de forma inmediata e irreversible.
+* **Qué sale (Outputs):**
+  * **Borrador formal de Derecho de Petición en interés particular:** Documento redactado con técnica forense (hechos cronológicos, pretensiones claras y citas normativas explícitas del corpus oficial cerrado: Constitución Política, Ley 1751/15, Ley 1755/15, Res. 229/20 y Sentencia T-760/08).
+  * **Exportación en doble formato:** Archivo de texto plano (`.txt`) y documento oficial maquetado en **PDF judicial formal** con membrete forense (`fpdf2`).
+  * **Diagnóstico interactivo del Semáforo de Términos:** Cálculo exacto de la fecha límite legal de respuesta de la EPS y cómputo de días hábiles vs. calendario conforme a la Circular Externa 2023151000000010-5 de la Supersalud, con simbología accesible universal (`✔`, `▲`, `✖`).
+  * **Directorio de radicación y escalamiento:** Enlaces institucionales directos a los portales oficiales de radicación de cada EPS y al canal nacional de la Superintendencia Nacional de Salud.
+  * **Hoja de ruta post-reclamación:** Orientación pedagógica sobre custodia probatoria, quejas administrativas ante Supersalud y requisitos para acudir a la Personería/Defensoría para interponer Acción de Tutela.
+  * **Audio accesible en voz alta:** Reproductor de audio nativo en español colombiano (TTS) para personas con dificultades visuales o de lectoescritura.
+
+---
+
+### 3. ¿Por qué no reemplaza al abogado? Argumenta en 5–8 frases.
+
+1. La práctica del derecho jamás se reduce a la confección automática de formatos procesales estandarizados, sino que exige una prudente ponderación de hechos, pruebas y principios que ninguna inteligencia artificial puede ejercer con criterio moral y responsabilidad deontológica.
+2. Un abogado evalúa la historia clínica en su contexto bioético y probatorio, identificando vicios del consentimiento, fallas en la lex artis médica o posibles daños antijurídicos que ameriten acciones de responsabilidad civil o patrimonial del Estado que escapan al análisis de un formulario automatizado.
+3. Ante la negativa o el silencio de la EPS, el abogado diseña una estrategia litigiosa a la medida, seleccionando con pericia técnica la vía procesal idónea (queja administrativa sancionatoria ante Supersalud, recurso de insistencia, acción de tutela con medidas cautelares o demanda ordinaria) según el riesgo del paciente.
+4. En el trámite constitucional, el abogado fundamenta el cumplimiento estricto del principio de inmediatez y subsidiariedad, interactúa directamente con el juez de tutela, desvirtúa las excepciones de la entidad de salud e impulsa incidentes de desacato con solicitud de sanciones de arresto y multa para compeler el cumplimiento material de las órdenes judiciales.
+5. Finalmente, la relación entre el profesional del derecho y su cliente se cimenta en la confidencialidad, el secreto profesional, el deber de lealtad y la empatía humana frente al sufrimiento de la enfermedad, dimensiones ontológicas y éticas que ningún algoritmo generativo podrá jamás sustituir.
 
 ---
 
@@ -463,11 +502,11 @@ Responde con total honestidad — aquí es donde demuestras tu criterio jurídic
 
 Requisitos de entrega del curso — todos deben estar ✅:
 
-- [ ] 🔗 **Solución funcionando**: resuelve el problema jurídico y está desplegada con URL pública.
-- [ ] 👤 **Usuario real**: al menos una persona externa al curso la usó, con evidencia (video corto o testimonio). Guarda la evidencia en `docs/evidencia-usuario.md`.
-- [ ] 📦 **Repositorio con historial**: este repo muestra tus avances semanales (commits + bitácora).
-- [ ] 🧠 **Análisis crítico**: Parte 7 completada.
-- [ ] 📋 Partes 1–7 de este README completas y al día.
+- [x] 🔗 **Solución funcionando**: resuelve el problema jurídico y está desplegada con URL pública oficial en Streamlit Community Cloud: **[https://clase-ia-y-derecho-javeriana---asistente-reclamaciones-en-salud.streamlit.app/](https://clase-ia-y-derecho-javeriana---asistente-reclamaciones-en-salud.streamlit.app/)**.
+- [x] 👤 **Usuario real**: una persona externa al curso probó la herramienta en un caso de demora en entrega de medicamentos, con evidencia en video archivada en [`docs/Evidencia-usuario/Video evidencia usuario.mp4`](docs/Evidencia-usuario/Video%20evidencia%20usuario.mp4) y reporte de usabilidad documentado en [`docs/evidencia-usuario.md`](docs/evidencia-usuario.md).
+- [x] 📦 **Repositorio con historial**: este repositorio documenta la evolución completa del proyecto semana a semana (commits continuos, bitácora de 17 semanas y control de cambios).
+- [x] 🧠 **Análisis crítico**: Parte 7 completada con rigor jurisprudencial (Sentencias T-760/08 y SU-508/20), bioético y procesal.
+- [x] 📋 Partes 1–7 de este README completas, coherentes y al día, acompañadas del guión estructurado de sustentación en [`docs/guion-sustentacion-m5.md`](docs/guion-sustentacion-m5.md).
 
 ---
 
